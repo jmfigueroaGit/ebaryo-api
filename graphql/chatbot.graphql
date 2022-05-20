@@ -1,0 +1,48 @@
+type Query{
+    users: [User]
+    user(id: ID!): User
+}
+
+type Mutation{
+    ask(question: String!): Message
+    create_chatbot(name: String,
+    locale: String, data: [ChatbotDataInput]): Chatbot
+}
+
+type Message{
+    answer: String
+}
+
+type Chatbot{
+    name: String
+    locale: String
+    data: [ChatbotData]
+}
+
+type ChatbotData{
+    intent: String
+    utterances: [ChatbotUtterance]
+    answers: [ChatbotAnswer],
+}
+
+type ChatbotAnswer{
+    answer: String
+}
+
+type ChatbotUtterance{
+    utterance: String
+}
+
+input ChatbotDataInput{
+    intent: String
+    utterances: [String]
+    answers: [String],
+}
+
+input ChatbotAnswerInput{
+    answer: String
+}
+
+input ChatbotUtteranceInput{
+    utterance: String
+}

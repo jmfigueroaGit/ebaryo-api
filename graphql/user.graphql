@@ -1,0 +1,28 @@
+type Query{
+    users: [User]
+    user(id: ID!): User
+}
+
+type Mutation{
+    auth(token: String!): User
+    login(email: String!, password: String!): AuthPayload
+    signup(email: String!, password: String!): AuthPayload
+    update(id: ID!, email: String, password: String): User
+    delete(id: ID!): Message
+}
+
+type AuthPayload{
+    token: String,
+    user: User 
+}
+
+type User {
+    _id: ID!
+    email: String!
+    isVerified: Boolean!
+    isAdmin: Boolean!
+}
+
+type Message{
+    message: String!
+}
