@@ -1,9 +1,11 @@
-const User = require('../models/userModel')
-const Resident = require('../models/residentModel')
 const asyncHandler = require('express-async-handler')
 const { ApolloError } = require('apollo-server')
-const generateToken = require('../utils/generateToken')
 const jwt = require("jsonwebtoken");
+const User = require('../models/userModel')
+const Resident = require('../models/residentModel')
+const generateToken = require('../utils/generateToken')
+const sendEmail = require('../utils/sendEmail')
+const crypto = require('crypto');
 
 // @desc    Get All Users
 // @access  Private || Admin
@@ -72,6 +74,9 @@ const authToken = asyncHandler(async (token) => {
         return user
 })
 
+
+// @desc    delete user 
+// @access  Private | Admin
 const deleteUser = asyncHandler(async (id) => {
     const user = await User.findById(id)
     const resident = await Resident.findOne({ user: id })
@@ -86,6 +91,68 @@ const deleteUser = asyncHandler(async (id) => {
     else throw new ApolloError("User not found")
 })
 
+const verifyEmail = asyncHandler(async (email) => {
+    const user = await User.findOne({ email: email })
+
+    if (!user) {
+        throw new ApolloError('User not found with this email')
+    }
+
+    // Generate reset token
+    const resetToken = user.getResetPasswordToken()
+
+    await user.save({ validateBeforeSave: true })
+
+    const message = `Your password reset token: ${resetToken}`
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'E-baryo Password Recovery',
+            message,
+        });
+
+        return { success: true, message: `Email sent to: ${user.email}` }
+    } catch (error) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save({ validateBeforeSave: false });
+        throw new ApolloError(error.message);
+    }
+})
+
+const resetPassword = asyncHandler(async (args) => {
+    // Hash URL Token
+    const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(args.token)
+        .digest('hex');
+
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApolloError('Password reset token is invalid or has been expired');
+    }
+
+    if (args.password !== args.confirmPassword) {
+        throw new ApolloError('Password does not match')
+    }
+
+    // Setup the new password
+    user.password = args.password;
+
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    return { success: true, message: 'Password Updated Successfully' }
+});
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -93,5 +160,7 @@ module.exports = {
     signupUser,
     updateUser,
     authToken,
-    deleteUser
+    deleteUser,
+    verifyEmail,
+    resetPassword
 }

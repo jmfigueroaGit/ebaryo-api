@@ -9,6 +9,8 @@ type Mutation{
     signup(email: String!, password: String!): AuthPayload
     update(id: ID!, email: String, password: String): User
     delete(id: ID!): Message
+    verify_email(email: String!): Reset
+    reset_password(token: String!, password: String!, confirmPassword: String!): Reset
 }
 
 type AuthPayload{
@@ -24,5 +26,10 @@ type User {
 }
 
 type Message{
+    message: String!
+}
+
+type Reset{
+    success: Boolean!
     message: String!
 }

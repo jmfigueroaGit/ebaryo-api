@@ -25,6 +25,12 @@ module.exports = {
         },
         delete: (_, args) => {
             return userController.deleteUser(args.id)
+        },
+        verify_email: (_, args) => {
+            return userController.verifyEmail(args.email)
+        },
+        reset_password: (_, args) => {
+            return userController.resetPassword(args)
         }
     }
 }

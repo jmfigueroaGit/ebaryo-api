@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const requestSchema = new mongoose.Schema(
 	{
@@ -10,7 +10,6 @@ const requestSchema = new mongoose.Schema(
 		request: {
 			type: String,
 			required: true,
-			enum: ['clearance', 'indigency', 'identification'],
 		},
 		purpose: {
 			type: String,
@@ -19,6 +18,7 @@ const requestSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			default: 'pending',
+			required: true
 		},
 	},
 	{
@@ -28,5 +28,5 @@ const requestSchema = new mongoose.Schema(
 
 mongoose.models = {};
 
-export default mongoose.model.Request ||
+module.exports = mongoose.model.Request ||
 	mongoose.model('Request', requestSchema);
