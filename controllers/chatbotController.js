@@ -1,8 +1,5 @@
 const { dockStart, containerBootstrap, Nlp, LangEn } = require('@nlpjs/basic');
 const asyncHandler = require('express-async-handler');
-const { assign } = require('nodemailer/lib/shared');
-const corpusEn = require('../data/corpus-en.json')
-const corpusTl = require('../data/corpus-tl.json')
 const Chatbot = require('../models/chatbotModel')
 
 const getAnswer = asyncHandler(async (question) => {
