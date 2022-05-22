@@ -1,0 +1,19 @@
+type Query{
+    reports: [Report]
+    report(id: ID!): Report
+    report_user(user_id: ID!): [Report]
+}
+
+type Mutation{
+    create_report(user_id: ID!, report: String!, purpose: String!): Report
+    update_report(report_id: ID!, report: String, purpose: String): Report
+    delete_report(report_id: ID!): Message  
+}
+
+type Report {
+    _id: ID!
+    user_id: ID!
+    report: String!
+    purpose: String!
+    user: User
+}

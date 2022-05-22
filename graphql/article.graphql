@@ -1,0 +1,19 @@
+type Query{
+    articles: [Article]
+    article(id: ID!): Article
+}
+
+type Mutation{
+    create_article(user_id: ID!, image: ImageInput, title: String!, body: String!, publish: Boolean): Article
+    update_article(article_id: ID!, image: ImageInput, title: String, body: String, publish: Boolean): Article
+    delete_article(article_id: ID!): Message  
+}
+
+type Article {
+    _id: ID!
+    user_id: ID!
+    image: Image
+    title: String!
+    body: String!
+    publish: Boolean!
+}

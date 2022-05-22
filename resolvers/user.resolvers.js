@@ -11,7 +11,8 @@ module.exports = {
 
     },
     Mutation: {
-        login: (_, args) => {
+        login: (_, args, context) => {
+            context.isAuthenticated = true;
             return userController.authUser(args.email, args.password)
         },
         signup: (_, args) => {
@@ -34,3 +35,4 @@ module.exports = {
         }
     }
 }
+

@@ -30,10 +30,7 @@ const createRequest = asyncHandler(async (args) => {
 // @desc    Update barangay request
 // @access  Private || Admin
 const updateRequest = asyncHandler(async (args) => {
-    const request = await Request.findById(args.request_id).populate({
-        path: 'user',
-        select: '_id email isAdmin isVerified'
-    });
+    const request = await Request.findById(args.request_id)
 
     if (request) {
         request.purpose = args.purpose || request.purpose

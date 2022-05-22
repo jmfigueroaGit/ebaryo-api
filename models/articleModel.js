@@ -1,4 +1,4 @@
-import mongoose from 'mongoose ';
+const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema(
 	{
@@ -25,6 +25,10 @@ const articleSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		publish: {
+			type: Boolean,
+			default: false
+		}
 	},
 	{
 		timestamps: true,
@@ -32,5 +36,5 @@ const articleSchema = new mongoose.Schema(
 );
 
 mongoose.models = {};
-export default mongoose.model.Article ||
+module.exports = mongoose.model.Article ||
 	mongoose.model('Article', articleSchema);

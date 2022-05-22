@@ -1,0 +1,29 @@
+type Query{
+    announcements: [Announcement]
+    announcement(id: ID!): Announcement
+}
+
+type Mutation{
+    create_announcement(user_id: ID!, image: ImageInput, description: String!, postedUntil: Date!, publish: Boolean): Announcement
+    update_announcement(announce_id: ID!, image: ImageInput, description: String, postedUntil: Date, viewCounts: Int, publish: Boolean): Announcement
+    delete_announcement(announce_id: ID!): Message  
+}
+
+type Announcement {
+    _id: ID!
+    user_id: ID!
+    image: Image
+    description: String!
+    postedUntil: Date!
+    viewCounts: Int!
+}
+
+type Image{
+    public_id: String!,
+    url: String!
+}
+
+input ImageInput{
+    public_id: String,
+    url: String
+}

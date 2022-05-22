@@ -1,4 +1,4 @@
-import mongoose from 'mongoose ';
+const mongoose = require('mongoose');
 
 const annoucementSchema = new mongoose.Schema(
 	{
@@ -21,9 +21,18 @@ const annoucementSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		postedUntil: {
+			type: Date,
+			required: true
+		},
 		viewCounts: {
 			type: Number,
+			default: 0
 		},
+		publish: {
+			type: Boolean,
+			default: false
+		}
 	},
 	{
 		timestamps: true,
@@ -31,5 +40,5 @@ const annoucementSchema = new mongoose.Schema(
 );
 
 mongoose.models = {};
-export default mongoose.model.Announcement ||
+module.exports = mongoose.model.Announcement ||
 	mongoose.model('Announcement', annoucementSchema);

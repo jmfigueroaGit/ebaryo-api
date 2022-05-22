@@ -25,6 +25,7 @@
     "express-async-handler": "^1.2.0",
     "express-graphql": "^0.12.0",
     "graphql": "^15.3.0",
+    "graphql-middleware": "^6.1.28",
     "graphql-subscriptions": "^2.0.0",
     "graphql-ws": "^5.8.2",
     "http": "^0.0.1-security",
