@@ -54,7 +54,7 @@ const signupUser = asyncHandler(async (email, password) => {
 const updateUser = asyncHandler(async (args) => {
     const user = await User.findById(args.id)
     if (user) {
-        user.email = user.email || args.email
+        user.email = args.email || user.email
         if (args.password) {
             user.password = args.password;
         }

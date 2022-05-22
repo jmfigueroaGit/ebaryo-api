@@ -1,0 +1,43 @@
+type Query{
+    personnels: [Personnel]
+    personnel(id: ID!): Personnel
+}
+
+type Mutation{
+    personnel_auth(token: String!): Personnel
+    personnel_login(email: String!, password: String!): Personnel_AuthPayload
+    personnel_signup(name: Personnel_Name, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel_AuthPayload
+    personnel_update(id: ID!, name: String, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel
+    personnel_delete(id: ID!): Message
+    personnel_verify_email(email: String!): Reset
+    personnel_reset_password(token: String!, password: String!, confirmPassword: String!): Reset
+}
+
+type Personnel_AuthPayload{
+    token: String,
+    personnel: Personnel 
+}
+
+type Personnel {
+    _id: ID
+    name: String
+    email: String
+    phoneNumber: String
+    sex: String
+    position: String
+    role: String
+}
+
+type Message{
+    message: String
+}
+
+type Reset{
+    success: Boolean
+    message: String
+}
+
+input Personnel_Name{
+    first: String!
+    last: String
+}
