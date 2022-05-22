@@ -70,11 +70,6 @@ const barangayInfo = new mongoose.Schema({
     }
 })
 
-const barangayOfficial = new mongoose.Schema({
-    barangayOfficial: [mainOfficial],
-    skOfficial: [skOfficial]
-})
-
 const mainOfficial = new mongoose.Schema({
     name: {
         type: String,
@@ -103,6 +98,13 @@ const skOfficial = new mongoose.Schema({
     }
 })
 
+const barangayOfficials = new mongoose.Schema({
+    barangayOfficials: [mainOfficial],
+    skOfficials: [skOfficial]
+})
+
+
+
 const image = new mongoose.Schema({
     public_id: {
         type: String,
@@ -117,7 +119,7 @@ const image = new mongoose.Schema({
 const barangaySchema = new mongoose.Schema(
     {
         barangayInfo: barangayInfo,
-        barangayOfficials: barangayOfficial,
+        barangayOfficials: barangayOfficials,
         images: [image]
     },
     {

@@ -1,0 +1,123 @@
+type Query{
+    barangays: [Barangay]
+    barangay(id: ID!): Barangay
+}
+
+type Mutation{
+    create_barangay(barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, images: [ImageInput]): Barangay
+    update_barangay(barangay_id: ID!, barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, images: [ImageInput]): Barangay
+    delete_barangay(barangay_id: ID!): Message  
+}
+
+type Barangay {
+    _id: ID!
+    barangayInfo: BarangayInfo,
+    barangayOfficials: BarangayOfficials,
+    images: [Image]
+}
+
+type BarangayInfo{
+    location: Location
+    contact: Contact
+    demographic: Demographic
+}
+
+type Location{
+    houseNumber: String
+    street: String
+    barangay: String
+    province: String
+    city: String
+    zipcode: String
+}
+
+type Contact{
+    hotline: String,
+    email: String
+}
+
+type Demographic{
+    residents: Int
+    families: Int
+    households: Int
+    landAreas: Int
+    streets: Int
+    healthCenter: Int
+    schools: Int
+}
+
+type BarangayOfficials {
+    barangayOfficials: [mainOfficial]
+    skOfficials: [skOfficial]
+}
+
+type mainOfficial{
+    name: String
+    position: String
+    image: String
+}
+
+type skOfficial{
+    name: String
+    position: String
+    image: String
+}
+
+type Image {
+    public_id: String
+    url: String
+}
+
+
+# Barangay Inputs
+input BarangayInfoInput{
+    location: LocationInput,
+    contact: ContactInput,
+    demographic: DemographicInput,
+}
+
+input LocationInput{
+    houseNumber: String,
+    street: String,
+    barangay: String,
+    province: String,
+    city: String,
+    zipcode: String
+}
+
+input ContactInput{
+    hotline: String,
+    email: String
+}
+
+input DemographicInput{
+    residents: Int,
+    families: Int,
+    households: Int,
+    landAreas: Int,
+    streets: Int,
+    healthCenter: Int,
+    schools: Int
+}
+
+input BarangayOfficialsInput {
+    barangayOfficials: [mainOfficialInput]
+    skOfficials: [skOfficialInput]
+}
+
+input mainOfficialInput{
+    name: String,
+    position: String,
+    image: String
+}
+
+input skOfficialInput{
+    name: String,
+    position: String,
+    image: String
+}
+
+input ImageInput {
+    public_id: String,
+    url: String
+}
