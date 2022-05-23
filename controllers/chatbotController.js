@@ -2,6 +2,8 @@ const { dockStart, containerBootstrap, Nlp, LangEn } = require('@nlpjs/basic');
 const asyncHandler = require('express-async-handler');
 const Chatbot = require('../models/chatbotModel')
 
+// @desc    Get answer through chatbot
+// @access  Private
 const getAnswer = asyncHandler(async (question) => {
     const container = containerBootstrap();
     const tl = await Chatbot.findOne({ locale: "tl-Tl" })
@@ -54,6 +56,8 @@ const getAnswer = asyncHandler(async (question) => {
     return { answer: result.answer }
 })
 
+// @desc    Creat chatbot with multi language
+// @access  Private || Admin
 const createChatbot = asyncHandler(async (args) => {
     const chatbot = await Chatbot.create({
         name: args.name,
@@ -63,6 +67,8 @@ const createChatbot = asyncHandler(async (args) => {
     return chatbot
 })
 
+// @desc    Get unanswered tagalog questions
+// @access  Private || Admin
 const getTlChatbotQuestion = asyncHandler(async (args) => {
     const tl = await Chatbot.findOne({ locale: "tl-Tl" })
     let data = null;
@@ -74,6 +80,8 @@ const getTlChatbotQuestion = asyncHandler(async (args) => {
     return { data }
 })
 
+// @desc    Answered tagalog questions
+// @access  Private || Admin
 const trainTlChatbot = asyncHandler(async (args) => {
     const tl = await Chatbot.findOne({ locale: "tl-Tl" })
     for (let i = 0; i < tl.data.length; i++) {
@@ -95,6 +103,8 @@ const trainTlChatbot = asyncHandler(async (args) => {
     }
 })
 
+// @desc    Delete uanswered tagalog questions
+// @access  Private || Admin
 const deleteTlQuestion = asyncHandler(async (args) => {
     const tl = await Chatbot.findOne({ locale: "tl-Tl" })
     for (let i = 0; i < tl.data.length; i++) {
@@ -110,6 +120,8 @@ const deleteTlQuestion = asyncHandler(async (args) => {
     }
 })
 
+// @desc    Get unanswered english questions
+// @access  Private || Admin
 const getEnChatbotQuestion = asyncHandler(async (args) => {
     const en = await Chatbot.findOne({ locale: "en-US" })
     let data = null;
@@ -121,6 +133,8 @@ const getEnChatbotQuestion = asyncHandler(async (args) => {
     return { data }
 })
 
+// @desc    Answered english questions
+// @access  Private || Admin
 const trainEnChatbot = asyncHandler(async (args) => {
     const en = await Chatbot.findOne({ locale: "en-US" })
     for (let i = 0; i < en.data.length; i++) {
@@ -143,6 +157,8 @@ const trainEnChatbot = asyncHandler(async (args) => {
 
 })
 
+// @desc    Delete uanswered english questions
+// @access  Private || Admin
 const deleteEnQuestion = asyncHandler(async (args) => {
     const en = await Chatbot.findOne({ locale: "en-US" })
     for (let i = 0; i < en.data.length; i++) {

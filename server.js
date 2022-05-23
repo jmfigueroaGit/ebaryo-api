@@ -1,50 +1,70 @@
 const path = require('path')
-const express = require('express')
-const { graphqlHTTP } = require('express-graphql')
+const { ApolloServer } = require('apollo-server-express');
+const { createServer } = require('http');
+const express = require('express');
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const { loadFilesSync } = require('@graphql-tools/load-files')
-const { makeExecutableSchema } = require('@graphql-tools/schema')
-const { applyMiddleware } = require('graphql-middleware')
+const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { WebSocketServer } = require('ws');
+const { useServer } = require('graphql-ws/lib/use/ws');
 const dotenv = require('dotenv')
 const dbConnect = require('./config/dbConnect')
 const cors = require('cors')
-const { resolve } = require('path')
+const http = require('http')
 
 dotenv.config()
-
 dbConnect()
 
-const typeDefs = loadFilesSync(path.join(__dirname, '**/*.graphql'))
-const resolvers = loadFilesSync(path.join(__dirname, '**/*.resolvers.js'))
+async function startApolloServer() {
+    const typeDefs = loadFilesSync(path.join(__dirname, '**/*.graphql'))
+    const resolvers = loadFilesSync(path.join(__dirname, '**/*.resolvers.js'))
 
-const schema = makeExecutableSchema({
-    typeDefs,
-    resolvers,
-})
+    const schema = makeExecutableSchema({
+        typeDefs,
+        resolvers,
+    })
 
-const uppercaseEmail = async (resolve, parent, args, context, info) => {
-    const result = await resolve(parent, args, context, info)
+    const app = express();
+    const httpServer = http.createServer(app);
+
+    const wsServer = new WebSocketServer({
+        server: httpServer,
+        path: '/graphql',
+    });
+
+    const serverCleanup = useServer({ schema }, wsServer);
 
 
+    const server = new ApolloServer({
+        schema,
+        csrfPrevention: true,
+        plugins: [
+            // Proper shutdown for the HTTP server.
+            ApolloServerPluginDrainHttpServer({ httpServer }),
+
+            // Proper shutdown for the WebSocket server.
+            {
+                async serverWillStart() {
+                    return {
+                        async drainServer() {
+                            await serverCleanup.dispose();
+                        },
+                    };
+                },
+            },
+        ],
+    });
+
+    await server.start();
+    server.applyMiddleware({ app });
+
+    const PORT = 5000;
+    // Now that our HTTP server is fully set up, we can listen to it.
+    httpServer.listen(process.env.PORT || PORT, () => {
+        console.log(
+            `🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`,
+        );
+    });
 }
 
-// For middleware
-// const userMiddleware = {
-//     Query: {
-//         users: uppercaseEmail
-//     }
-// }
-// const middleware = [userMiddleware]
-// const schemaWithMiddleware = applyMiddleware(schema, ...middleware)
-
-const app = express();
-app.use(cors())
-
-app.use('/graphql', graphqlHTTP({
-    schema: schema
-    ,
-    graphiql: true
-}))
-
-app.listen(process.env.PORT || 5000, () => {
-    console.log(`Running in PORT ${process.env.PORT}`);
-});
+startApolloServer()

@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@graphql-tools/load-files": "^6.5.3",
-    "@graphql-tools/schema": "^8.3.12",
+    "@graphql-tools/schema": "^8.3.13",
     "@nlpjs/basic": "^4.23.5",
     "@nlpjs/lang-tl": "^4.23.4",
     "apollo-server": "^3.7.0",
