@@ -30,6 +30,7 @@ const authUser = asyncHandler(async (email, password) => {
     const user = await User.findOne({ email }).select('+password')
 
     if (user && (await user.comparePassword(password))) {
+
         return { user, token: generateToken(user._id) }
     }
     else

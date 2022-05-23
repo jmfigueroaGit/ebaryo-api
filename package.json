@@ -30,10 +30,12 @@
     "graphql-ws": "^5.8.2",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
+    "micro-cors": "^0.1.1",
     "mongoose": "^6.3.3",
     "nodemailer": "^6.7.5",
     "raw-body": "^2.5.1",
     "socket.io": "^4.5.1",
+    "subscriptions-transport-ws": "^0.11.0",
     "validator": "^13.7.0",
     "ws": "^8.6.0"
   },

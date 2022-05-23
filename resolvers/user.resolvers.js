@@ -1,4 +1,6 @@
 const userController = require('../controllers/userController')
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 module.exports = {
     Query: {
         users: () => {
@@ -7,13 +9,14 @@ module.exports = {
         user: (_, args) => {
             return userController.getUserById(args.id)
         },
-
-
     },
     Mutation: {
         login: (_, args, context) => {
-            context.isAuthenticated = true;
-            return userController.authUser(args.email, args.password)
+            const user = userController.authUser(args.email, args.password)
+            pubsub.publish('LOGIN_USER', {
+                loginUser: user
+            })
+            return user
         },
         signup: (_, args) => {
             return userController.signupUser(args.email, args.password)
@@ -33,6 +36,11 @@ module.exports = {
         reset_password: (_, args) => {
             return userController.resetPassword(args)
         }
+    },
+    Subscription: {
+        loginUser: {
+            subscribe: () => pubsub.asyncIterator(["LOGIN_USER"]),
+        },
     }
 }
 

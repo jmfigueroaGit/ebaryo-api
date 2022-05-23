@@ -13,6 +13,10 @@ type Mutation{
     reset_password(token: String!, password: String!, confirmPassword: String!): Reset
 }
 
+type Subscription {
+    loginUser: AuthPayload
+}
+
 type AuthPayload{
     token: String,
     user: User 
