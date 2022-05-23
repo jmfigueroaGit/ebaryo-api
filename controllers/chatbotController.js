@@ -27,6 +27,30 @@ const getAnswer = asyncHandler(async (question) => {
         }
         return output;
     }
+    if (result.intent === 'None') {
+        if (result.locale === 'tl') {
+            let data = null
+            for (let i = 0; i < tl.data.length; i++) {
+                if (tl.data[i].intent === 'None') {
+                    data = tl.data[i].utterances
+                    data.push(result.utterance)
+                    tl.data[i].utterances = data
+                    tl.save()
+                }
+            }
+        }
+        if (result.locale == 'en') {
+            let data = null
+            for (let i = 0; i < en.data.length; i++) {
+                if (en.data[i].intent === 'None') {
+                    data = en.data[i].utterances
+                    data.push(result.utterance)
+                    en.data[i].utterances = data
+                    en.save()
+                }
+            }
+        }
+    }
     return { answer: result.answer }
 })
 
@@ -39,7 +63,108 @@ const createChatbot = asyncHandler(async (args) => {
     return chatbot
 })
 
+const getTlChatbotQuestion = asyncHandler(async (args) => {
+    const tl = await Chatbot.findOne({ locale: "tl-Tl" })
+    let data = null;
+    for (let i = 0; i < tl.data.length; i++) {
+        if (tl.data[i].intent === 'None') {
+            data = tl.data[i].utterances
+        }
+    }
+    return { data }
+})
+
+const trainTlChatbot = asyncHandler(async (args) => {
+    const tl = await Chatbot.findOne({ locale: "tl-Tl" })
+    for (let i = 0; i < tl.data.length; i++) {
+        if (tl.data[i].intent === 'None') {
+            for (let j = 0; j < tl.data[i].utterances.length; j++) {
+                if (tl.data[i].utterances[j] === args.question) {
+                    let newData = {
+                        intent: `question-${tl.data.length + 1}`,
+                        utterances: [tl.data[i].utterances[j]],
+                        answers: [args.answer]
+                    };
+                    tl.data.push(newData)
+                    tl.data[i].utterances.splice(j, 1);
+                    tl.save()
+                    return { answer: "Train chatbot success" }
+                }
+            }
+        }
+    }
+})
+
+const deleteTlQuestion = asyncHandler(async (args) => {
+    const tl = await Chatbot.findOne({ locale: "tl-Tl" })
+    for (let i = 0; i < tl.data.length; i++) {
+        if (tl.data[i].intent === 'None') {
+            for (let j = 0; j < tl.data[i].utterances.length; j++) {
+                if (tl.data[i].utterances[j] === args.question) {
+                    tl.data[i].utterances.splice(j, 1);
+                    tl.save()
+                    return { message: "Question deleted successfully" }
+                }
+            }
+        }
+    }
+})
+
+const getEnChatbotQuestion = asyncHandler(async (args) => {
+    const en = await Chatbot.findOne({ locale: "en-US" })
+    let data = null;
+    for (let i = 0; i < en.data.length; i++) {
+        if (en.data[i].intent === 'None') {
+            data = en.data[i].utterances
+        }
+    }
+    return { data }
+})
+
+const trainEnChatbot = asyncHandler(async (args) => {
+    const en = await Chatbot.findOne({ locale: "en-US" })
+    for (let i = 0; i < en.data.length; i++) {
+        if (en.data[i].intent === 'None') {
+            for (let j = 0; j < en.data[i].utterances.length; j++) {
+                if (en.data[i].utterances[j] === args.question) {
+                    let newData = {
+                        intent: `question-${en.data.length + 1}`,
+                        utterances: [en.data[i].utterances[j]],
+                        answers: [args.answer]
+                    };
+                    en.data.push(newData)
+                    en.data[i].utterances.splice(j, 1);
+                    en.save()
+                    return { answer: "Train chatbot success" }
+                }
+            }
+        }
+    }
+
+})
+
+const deleteEnQuestion = asyncHandler(async (args) => {
+    const en = await Chatbot.findOne({ locale: "en-US" })
+    for (let i = 0; i < en.data.length; i++) {
+        if (en.data[i].intent === 'None') {
+            for (let j = 0; j < en.data[i].utterances.length; j++) {
+                if (en.data[i].utterances[j] === args.question) {
+                    en.data[i].utterances.splice(j, 1);
+                    en.save()
+                    return { message: "Question deleted successfully" }
+                }
+            }
+        }
+    }
+})
+
 module.exports = {
     getAnswer,
-    createChatbot
+    createChatbot,
+    getTlChatbotQuestion,
+    getEnChatbotQuestion,
+    trainTlChatbot,
+    trainEnChatbot,
+    deleteTlQuestion,
+    deleteEnQuestion
 }

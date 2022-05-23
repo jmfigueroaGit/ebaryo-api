@@ -1,16 +1,31 @@
 type Query{
     users: [User]
     user(id: ID!): User
+    tl_questions: Data
+    en_questions: Data
 }
+
 
 type Mutation{
     ask(question: String!): Message
     create_chatbot(name: String,
     locale: String, data: [ChatbotDataInput]): Chatbot
+    answerTlChatbot(question: String!, answer: String!): Message
+    answerEnChatbot(question: String!, answer: String!): Message
+    deleteTlQuestion(question: String!): MessageDelete
+    deleteEnQuestion(question: String!): MessageDelete
+}
+
+type MessageDelete{
+    message: String
 }
 
 type Message{
     answer: String
+}
+
+type Data{
+    data: [String]
 }
 
 type Chatbot{

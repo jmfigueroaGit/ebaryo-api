@@ -2,7 +2,7 @@ const Barangay = require('../models/barangayModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 
-// @desc    Create barangay request
+// @desc    Create barangay 
 // @access  Private
 const createBarangay = asyncHandler(async (args) => {
 
@@ -20,7 +20,7 @@ const createBarangay = asyncHandler(async (args) => {
     }
 });
 
-// @desc    Update barangay request
+// @desc    Update barangay 
 // @access  Private || Admin
 const updateBarangay = asyncHandler(async (args) => {
     const barangay = await Barangay.findById(args.barangay_id)
@@ -37,7 +37,7 @@ const updateBarangay = asyncHandler(async (args) => {
     }
 });
 
-// @desc    Delete barangay request
+// @desc    Delete barangay 
 // @access  Private || Admin
 const deleteBarangay = asyncHandler(async (args) => {
     const barangay = await Barangay.findById(args.barangay_id);
@@ -50,8 +50,8 @@ const deleteBarangay = asyncHandler(async (args) => {
     }
 });
 
-// @desc    Get barangay request
-// @access  Private || Admin
+// @desc    Get barangay
+// @access  Private 
 const getBarangayById = asyncHandler(async (args) => {
     const barangay = await Barangay.findById(args.id)
 
@@ -63,7 +63,7 @@ const getBarangayById = asyncHandler(async (args) => {
     }
 });
 
-// @desc    Get all barangay request
+// @desc    Get all barangay 
 // @access  Private && Admin
 const getAllBarangay = asyncHandler(async () => {
     const barangays = await Barangay.find()

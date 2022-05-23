@@ -3,7 +3,7 @@ const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const User = require('../models/userModel')
 
-// @desc    Create barangay announcement
+// @desc    Create barangay article
 // @access  Private || Admin
 const createArticle = asyncHandler(async (args) => {
     const { user_id, image, title, body, publish } = args;
@@ -26,7 +26,7 @@ const createArticle = asyncHandler(async (args) => {
     else throw new ApolloError('Invalid data format');
 });
 
-// @desc    Update barangay announcement
+// @desc    Update barangay article
 // @access  Private || Admin
 const updateArticle = asyncHandler(async (args) => {
     const article = await Article.findById(args.article_id)
@@ -44,7 +44,7 @@ const updateArticle = asyncHandler(async (args) => {
 
 });
 
-// @desc    Delete barangay annoucement
+// @desc    Delete barangay article
 // @access  Private || Admin
 const deleteArticle = asyncHandler(async (args) => {
     const article = await Article.findById(args.article_id);
@@ -57,7 +57,7 @@ const deleteArticle = asyncHandler(async (args) => {
 
 });
 
-// @desc    GET barangay Announcement
+// @desc    GET barangay article
 // @access  Private
 const getArticle = asyncHandler(async (args) => {
     const article = await Article.findById(args.id);
@@ -67,7 +67,7 @@ const getArticle = asyncHandler(async (args) => {
 
 });
 
-// @desc    GET All barangay Announcement
+// @desc    GET All barangay articles
 // @access  Private
 const getAllArticle = asyncHandler(async () => {
     const articles = await Article.find();
