@@ -4,6 +4,9 @@ module.exports = {
         residents: () => {
             return residentController.getAllResidents()
         },
+        residents_filter: (_, args) => {
+            return residentController.getFilterResidents(args)
+        },
         resident: (_, args) => {
             return residentController.getResident(args.id)
         },

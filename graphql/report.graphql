@@ -1,12 +1,13 @@
 type Query{
     reports: [Report]
+    reports_filter(value: ID!): [Report]
     report(id: ID!): Report
     report_user(user_id: ID!): [Report]
 }
 
 type Mutation{
-    create_report(user_id: ID!, report: String!, purpose: String!): Report
-    update_report(report_id: ID!, report: String, purpose: String): Report
+    create_report(user_id: ID!, report: String!, description: String!): Report
+    update_report(report_id: ID!, report: String, description: String): Report
     delete_report(report_id: ID!): Message  
 }
 
@@ -14,6 +15,7 @@ type Report {
     _id: ID!
     user_id: ID!
     report: String!
-    purpose: String!
+    description: String!
     user: User
+    transactionId: String
 }

@@ -8,7 +8,37 @@ const { ApolloError } = require('apollo-server')
 const getAllResidents = asyncHandler(async () => {
     const residents = await Resident.find().populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email isAdmin isVerified slugId'
+    })
+    return residents
+});
+
+// @desc    Get All Residents
+// @access  Private || Admin
+const getFilterResidents = asyncHandler(async (args) => {
+    const value = args.value.toLowerCase()
+    const residents = await Resident.find({
+        "$or": [
+            { 'name.first': { $regex: value } },
+            { 'name.middle': { $regex: value } },
+            { 'name.last': { $regex: value } },
+            { 'sex': { $regex: value } },
+            { 'nationality': { $regex: value } },
+            { 'mobileNumber': { $regex: value } },
+            { 'guardian.fullname': { $regex: value } },
+            { 'guardian.contact': { $regex: value } },
+            { 'guardian.relationship': { $regex: value } },
+            { 'guardian.address': { $regex: value } },
+            { 'address.houseNumber': { $regex: value } },
+            { 'address.street': { $regex: value } },
+            { 'address.barangay': { $regex: value } },
+            { 'address.region': { $regex: value } },
+            { 'address.city': { $regex: value } },
+            { 'address.zipcode': { $regex: value } },
+        ]
+    }).populate({
+        path: 'user',
+        select: '_id email isAdmin isVerified slugId'
     })
     return residents
 });
@@ -126,6 +156,7 @@ const deleteResident = asyncHandler(async (args) => {
 
 module.exports = {
     getAllResidents,
+    getFilterResidents,
     getResident,
     getResidentById,
     createResident,

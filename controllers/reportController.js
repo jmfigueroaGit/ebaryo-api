@@ -6,7 +6,7 @@ const { ApolloError } = require('apollo-server')
 // @desc    Create barangay report
 // @access  Private
 const createReport = asyncHandler(async (args) => {
-    const { user_id, report, purpose } = args;
+    const { user_id, report, description } = args;
 
     const user = await User.findById(user_id)
 
@@ -17,7 +17,7 @@ const createReport = asyncHandler(async (args) => {
     const barangay_report = await Report.create({
         user: user_id,
         report,
-        purpose,
+        description,
     })
 
     if (barangay_report) {
@@ -33,7 +33,7 @@ const updateReport = asyncHandler(async (args) => {
     const report = await Report.findById(args.report_id)
 
     if (report) {
-        report.purpose = args.purpose || request.purpose
+        report.description = args.description || request.description
         report.report = args.report || report.report
 
         const updated_report = await report.save()
@@ -84,6 +84,22 @@ const getAllReports = asyncHandler(async () => {
     return reports
 });
 
+const getFilterReports = asyncHandler(async (args) => {
+    const value = args.value.toLowerCase()
+    const reports = await Report.find({
+        "$or": [
+            { report: { $regex: args.value } },
+            { description: { $regex: args.value } },
+            { status: { $regex: value } },
+            { transactionId: { $regex: value } }
+        ]
+    }).populate({
+        path: 'user',
+        select: '_id email slugId isVerified'
+    })
+    return reports
+});
+
 // @desc    Get all barangay reports of current logged in user
 // @access  Private
 const getUserReports = asyncHandler(async (args) => {
@@ -104,4 +120,5 @@ module.exports = {
     getReportById,
     getAllReports,
     getUserReports,
+    getFilterReports
 };

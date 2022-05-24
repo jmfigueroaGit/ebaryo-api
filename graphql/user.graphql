@@ -1,5 +1,6 @@
 type Query{
     users: [User]
+    users_filter(value: String!): [User]
     user(id: ID!): User
 }
 
@@ -15,6 +16,7 @@ type Mutation{
 
 type Subscription {
     loginUser: AuthPayload
+    users: [User]
 }
 
 type AuthPayload{
@@ -23,17 +25,17 @@ type AuthPayload{
 }
 
 type User {
-    _id: ID!
-    email: String!
-    isVerified: Boolean!
-    isAdmin: Boolean!
+    _id: ID
+    email: String
+    isVerified: Boolean
+    slugId: String
 }
 
 type Message{
-    message: String!
+    message: String
 }
 
 type Reset{
-    success: Boolean!
-    message: String!
+    success: Boolean
+    message: String
 }

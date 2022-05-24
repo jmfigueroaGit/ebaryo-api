@@ -1,5 +1,6 @@
 type Query{
     residents: [Resident]
+    residents_filter(value: String!): [Resident]
     resident(id: ID!): Resident
     resident_user(user_id: ID!): Resident
 }

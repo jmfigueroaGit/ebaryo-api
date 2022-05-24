@@ -1,6 +1,7 @@
 type Query{
     requests: [Request]
     request(id: ID!): Request
+    request_filter(value: String!): [Request]
     request_user(user_id: ID!): [Request]
 }
 
@@ -11,9 +12,10 @@ type Mutation{
 }
 
 type Request {
-    _id: ID!
-    user_id: ID!
-    request: String!
-    purpose: String!
+    _id: ID
+    request: String
+    purpose: String
     user: User
+    status: String
+    transactionId: String
 }

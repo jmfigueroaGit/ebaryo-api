@@ -4,7 +4,14 @@ const pubsub = new PubSub();
 module.exports = {
     Query: {
         users: () => {
-            return userController.getAllUsers()
+            const users = userController.getAllUsers()
+            pubsub.publish('GET_USERS', {
+                users: users
+            })
+            return users
+        },
+        users_filter: (_, args) => {
+            return userController.getFilterUsers(args)
         },
         user: (_, args) => {
             return userController.getUserById(args.id)
@@ -38,6 +45,9 @@ module.exports = {
         }
     },
     Subscription: {
+        users: {
+            subscribe: () => pubsub.asyncIterator(["GET_USERS"]),
+        },
         loginUser: {
             subscribe: () => pubsub.asyncIterator(["LOGIN_USER"]),
         },

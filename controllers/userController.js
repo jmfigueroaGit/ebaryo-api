@@ -14,6 +14,20 @@ const getAllUsers = asyncHandler(async () => {
     return users
 });
 
+// @desc    Get All Users
+// @access  Private || Admin
+const getFilterUsers = asyncHandler(async (args) => {
+    const value = args.value.toLowerCase()
+
+    const users = await User.find({
+        "$or": [
+            { 'email': { $regex: value } },
+            { 'slugId': { $regex: value } },
+        ]
+    })
+    return users
+});
+
 // @desc    Get User by Id
 // @access  Private 
 const getUserById = asyncHandler(async (id) => {
@@ -156,6 +170,7 @@ const resetPassword = asyncHandler(async (args) => {
 
 module.exports = {
     getAllUsers,
+    getFilterUsers,
     getUserById,
     authUser,
     signupUser,

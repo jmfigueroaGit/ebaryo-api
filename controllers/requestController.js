@@ -78,7 +78,26 @@ const getRequestById = asyncHandler(async (args) => {
 const getAllRequests = asyncHandler(async () => {
     const requests = await Request.find().populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email isAdmin isVerified slugId'
+    })
+
+    return requests
+});
+
+// @desc    Get all barangay request
+// @access  Private && Admin
+const getFilterRequests = asyncHandler(async (args) => {
+    const value = args.value.toLowerCase()
+    const requests = await Request.find({
+        "$or": [
+            { request: { $regex: value } },
+            { purpose: { $regex: value } },
+            { status: { $regex: value } },
+            { transactionId: { $regex: value } }
+        ]
+    }).populate({
+        path: 'user',
+        select: '_id email isAdmin isVerified slugId'
     })
 
     return requests
@@ -104,4 +123,5 @@ module.exports = {
     getRequestById,
     getAllRequests,
     getUserRequests,
+    getFilterRequests
 };

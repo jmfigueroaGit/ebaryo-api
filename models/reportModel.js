@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { customAlphabet } = require('nanoid')
 
 const reportSchema = new mongoose.Schema(
 	{
@@ -11,7 +12,7 @@ const reportSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		purpose: {
+		description: {
 			type: String,
 			required: true,
 		},
@@ -19,11 +20,21 @@ const reportSchema = new mongoose.Schema(
 			type: String,
 			default: 'pending',
 		},
+		transactionId: {
+			type: String
+		}
 	},
 	{
 		timestamps: true,
 	}
 );
+
+reportSchema.pre('save', async function (next) {
+	const data = 'qwertyuiopasdfghjklzxcvbnm1234567890' + new Date().getTime()
+	const nanoid = customAlphabet(data, 10);
+	const year = new Date().getFullYear();
+	this.transactionId = year + "-" + nanoid(6);
+});
 
 mongoose.models = {};
 

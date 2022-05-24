@@ -4,6 +4,9 @@ module.exports = {
         reports: () => {
             return reportController.getAllReports()
         },
+        reports_filter: (_, args) => {
+            return reportController.getFilterReports(args)
+        },
         report: (_, args) => {
             return reportController.getReportById(args)
         },

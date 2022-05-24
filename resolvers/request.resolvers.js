@@ -7,6 +7,9 @@ module.exports = {
         request: (_, args) => {
             return requestController.getRequestById(args)
         },
+        request_filter: (_, args) => {
+            return requestController.getFilterRequests(args)
+        },
         request_user: (_, args) => {
             return requestController.getUserRequests(args)
         }
