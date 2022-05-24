@@ -2,6 +2,7 @@ const Request = require('../models/requestModel');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const { ApolloError } = require('apollo-server')
+const leadingzero = require('leadingzero')
 
 // @desc    Create barangay request
 // @access  Private
@@ -9,7 +10,9 @@ const createRequest = asyncHandler(async (args) => {
     const { user_id, request, purpose } = args;
 
     const user = await User.findById(user_id)
-
+    const requestLength = await Request.find()
+    const running = leadingzero(requestLength.length + 1, 4)
+    const transactionId = 'rqst-22-' + running;
     if (user.isVerified === false) {
         throw new ApolloError('User must verified first')
     }
@@ -17,6 +20,7 @@ const createRequest = asyncHandler(async (args) => {
     const barangay_request = await Request.create({
         user: user_id,
         request,
+        transactionId,
         purpose,
     });
 
@@ -62,7 +66,7 @@ const deleteRequest = asyncHandler(async (args) => {
 const getRequestById = asyncHandler(async (args) => {
     const request = await Request.findById(args.id).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email  isVerified'
     });
 
     if (request) {
@@ -78,7 +82,7 @@ const getRequestById = asyncHandler(async (args) => {
 const getAllRequests = asyncHandler(async () => {
     const requests = await Request.find().populate({
         path: 'user',
-        select: '_id email isAdmin isVerified slugId'
+        select: '_id email  isVerified '
     })
 
     return requests
@@ -97,7 +101,7 @@ const getFilterRequests = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified slugId'
+        select: '_id email  isVerified '
     })
 
     return requests
@@ -108,7 +112,7 @@ const getFilterRequests = asyncHandler(async (args) => {
 const getUserRequests = asyncHandler(async (args) => {
     const requests = await Request.find({ user: args.user_id }).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email  isVerified'
     });
 
     if (requests) {

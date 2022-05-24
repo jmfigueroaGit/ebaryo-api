@@ -2,7 +2,7 @@ const Announcement = require('../models/announcementModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const User = require('../models/userModel')
-
+const leadingzero = require('leadingzero')
 // @desc    Create barangay announcement
 // @access  Private || Admin
 const createAnnouncement = asyncHandler(async (args) => {
@@ -13,13 +13,16 @@ const createAnnouncement = asyncHandler(async (args) => {
     if (!user) {
         throw new ApolloError('User not found')
     }
-
+    const annouceLength = await Announcement.find()
+    const running = leadingzero(annouceLength.length + 1, 4)
+    const ancmtId = 'ancmt-22-' + running;
     const announcement = await Announcement.create({
         user: user_id,
         image: image,
         description,
         postedUntil,
-        publish
+        publish,
+        ancmtId
     });
 
     if (announcement) return announcement

@@ -28,6 +28,10 @@ const articleSchema = new mongoose.Schema(
 		publish: {
 			type: Boolean,
 			default: false
+		},
+		artclId: {
+			type: String,
+			required: true
 		}
 	},
 	{

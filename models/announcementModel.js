@@ -32,7 +32,12 @@ const annoucementSchema = new mongoose.Schema(
 		publish: {
 			type: Boolean,
 			default: false
+		},
+		ancmtId: {
+			type: String,
+			required: true
 		}
+
 	},
 	{
 		timestamps: true,

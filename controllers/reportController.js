@@ -2,6 +2,7 @@ const Report = require('../models/reportModel');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const { ApolloError } = require('apollo-server')
+const leadingzero = require('leadingzero')
 
 // @desc    Create barangay report
 // @access  Private
@@ -9,7 +10,9 @@ const createReport = asyncHandler(async (args) => {
     const { user_id, report, description } = args;
 
     const user = await User.findById(user_id)
-
+    const reportLength = await Report.find()
+    const running = leadingzero(reportLength.length + 1, 4)
+    const transactionId = 'rprt-22-' + running;
     if (user.isVerified === false) {
         throw new ApolloError('User must verified first')
     }
@@ -17,6 +20,7 @@ const createReport = asyncHandler(async (args) => {
     const barangay_report = await Report.create({
         user: user_id,
         report,
+        transactionId,
         description,
     })
 
@@ -62,7 +66,7 @@ const deleteReport = asyncHandler(async (args) => {
 const getReportById = asyncHandler(async (args) => {
     const report = await Report.findById(args.id).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email  isVerified'
     });
 
     if (report) {
@@ -78,7 +82,7 @@ const getReportById = asyncHandler(async (args) => {
 const getAllReports = asyncHandler(async () => {
     const reports = await Report.find().populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email  isVerified'
     })
 
     return reports
@@ -95,7 +99,7 @@ const getFilterReports = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'user',
-        select: '_id email slugId isVerified'
+        select: '_id email  isVerified'
     })
     return reports
 });
@@ -105,7 +109,7 @@ const getFilterReports = asyncHandler(async (args) => {
 const getUserReports = asyncHandler(async (args) => {
     const reports = await Report.find({ user: args.user_id }).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email  isVerified'
     });
 
     if (reports) {

@@ -44,6 +44,10 @@ const residentSchema = new mongoose.Schema(
 			city: { type: String, required: true },
 			zipcode: { type: String, required: true },
 		},
+		residentId: {
+			type: String,
+			required: true
+		}
 	},
 	{
 		timestamps: true,

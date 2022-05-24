@@ -21,8 +21,7 @@ const getFilterUsers = asyncHandler(async (args) => {
 
     const users = await User.find({
         "$or": [
-            { 'email': { $regex: value } },
-            { 'slugId': { $regex: value } },
+            { 'email': { $regex: value } }
         ]
     })
     return users

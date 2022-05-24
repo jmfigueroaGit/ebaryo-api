@@ -28,7 +28,6 @@ type User {
     _id: ID
     email: String
     isVerified: Boolean
-    slugId: String
 }
 
 type Message{

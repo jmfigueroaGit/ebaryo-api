@@ -20,12 +20,17 @@ type Personnel_AuthPayload{
 
 type Personnel {
     _id: ID
-    name: String
+    name: Personel_Name
     email: String
     phoneNumber: String
     sex: String
     position: String
     role: String
+}
+
+type Personel_Name{
+    first: String
+    last: String
 }
 
 type Message{

@@ -2,13 +2,14 @@ const Resident = require('../models/residentModel')
 const User = require('../models/userModel')
 const asyncHandler = require('express-async-handler')
 const { ApolloError } = require('apollo-server')
+const leadingzero = require('leadingzero')
 
 // @desc    Get All Residents
 // @access  Private || Admin
 const getAllResidents = asyncHandler(async () => {
     const residents = await Resident.find().populate({
         path: 'user',
-        select: '_id email isAdmin isVerified slugId'
+        select: '_id email isVerified'
     })
     return residents
 });
@@ -23,6 +24,7 @@ const getFilterResidents = asyncHandler(async (args) => {
             { 'name.middle': { $regex: value } },
             { 'name.last': { $regex: value } },
             { 'sex': { $regex: value } },
+            { 'residentId': { $regex: value } },
             { 'nationality': { $regex: value } },
             { 'mobileNumber': { $regex: value } },
             { 'guardian.fullname': { $regex: value } },
@@ -38,7 +40,7 @@ const getFilterResidents = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified slugId'
+        select: '_id email isVerified'
     })
     return residents
 });
@@ -48,7 +50,7 @@ const getFilterResidents = asyncHandler(async (args) => {
 const getResident = asyncHandler(async (id) => {
     const resident = await Resident.findById(id).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email isVerified'
     })
     if (resident) return resident
     else throw new ApolloError('Resident not existed with this ID');
@@ -59,7 +61,7 @@ const getResident = asyncHandler(async (id) => {
 const getResidentById = asyncHandler(async (user_id) => {
     const resident = await Resident.findOne({ user: user_id }).populate({
         path: 'user',
-        select: '_id email isAdmin isVerified'
+        select: '_id email isVerified'
     })
     if (resident) return resident
     else throw new ApolloError(`Resident not existed with this User's ID`);
@@ -81,6 +83,9 @@ const createResident = asyncHandler(async (args) => {
     if (!user) {
         throw new ApolloError('User not existed');
     }
+    const residentLength = await Resident.find()
+    const running = leadingzero(residentLength.length + 1, 4)
+    const residentId = 'rsdt-22-' + running;
 
     const resident = await Resident.create({
         user: user._id,
@@ -96,6 +101,7 @@ const createResident = asyncHandler(async (args) => {
             address,
         },
         address: { houseNumber, street, barangay, region, city, zipcode },
+        residentId
     });
 
     if (resident) {

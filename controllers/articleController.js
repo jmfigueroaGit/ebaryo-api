@@ -2,6 +2,7 @@ const Article = require('../models/articleModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const User = require('../models/userModel')
+const leadingzero = require('leadingzero')
 
 // @desc    Create barangay article
 // @access  Private || Admin
@@ -13,13 +14,17 @@ const createArticle = asyncHandler(async (args) => {
     if (!user) {
         throw new ApolloError('User not found')
     }
+    const articleLength = await Article.find()
+    const running = leadingzero(articleLength.length + 1, 4)
+    const artclId = 'artcl-22-' + running;
 
     const article = await Article.create({
         user: user_id,
         image: image,
         title,
         body,
-        publish
+        publish,
+        artclId
     });
 
     if (article) return article
