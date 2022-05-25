@@ -1,8 +1,10 @@
 const Article = require('../models/articleModel');
+const User = require('../models/userModel');
+const userNotification = require('../models/userNotificationModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
-const User = require('../models/userModel')
 const leadingzero = require('leadingzero')
+
 
 // @desc    Create barangay article
 // @access  Private || Admin
@@ -80,10 +82,44 @@ const getAllArticle = asyncHandler(async () => {
     return articles
 });
 
+// @desc    Update barangay article
+// @access  Private || Admin
+const publishArticle = asyncHandler(async (args) => {
+    const { articleId, status } = args
+
+    const article = await Article.findById(articleId)
+    if (!article) throw new Error('Article not found');
+
+    article.publish = status;
+    article.save()
+
+    if (article.publish === true) {
+        const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
+
+        const data = {
+            type: "article",
+            description: `${article.title} is now available. Check it.`,
+            notifId: articleId
+        }
+
+        const notification = await userNotification.find()
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(data)
+            notification[i].save()
+        }
+
+        if (user && notification) return article
+        else throw new ApolloError('Error encountered');
+    } return article
+
+});
+
+
 module.exports = {
     createArticle,
     updateArticle,
     deleteArticle,
     getArticle,
     getAllArticle,
+    publishArticle
 };

@@ -1,4 +1,5 @@
 const surveyController = require('../controllers/surveyController')
+
 module.exports = {
     Query: {
         surveys: () => {
@@ -12,8 +13,5 @@ module.exports = {
         response_survey: (_, args) => {
             return surveyController.submitResponce(args);
         },
-        publish_survey: (_, args) => {
-            return surveyController.publishSurvey(args)
-        }
-    }
+    },
 }

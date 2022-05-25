@@ -56,27 +56,27 @@ const publishSurvey = asyncHandler(async (args) => {
     const survey = await Survey.findById(surveyId)
     if (!survey) throw new ApolloError('Survey not found');
 
-    survey.publish = status || survey.publish
+    survey.publish = status
     survey.save()
 
-    const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
+    if (survey.publish === true) {
+        const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
 
-    const data = {
-        type: "survey",
-        description: `${survey.title} is now available. Check it.`,
-        notifId: surveyId
-    }
+        const data = {
+            type: "survey",
+            description: `${survey.title} is now available. Check it.`,
+            notifId: surveyId
+        }
 
-    const notification = await userNotification.find()
-    for (let i = 0; i < notification.length; i++) {
-        notification[i].notifications.push(data)
-        notification[i].save()
-    }
-    // notification.notifications.push(data)
-    // notification.save()
+        const notification = await userNotification.find()
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(data)
+            notification[i].save()
+        }
 
-    if (user && notification) return survey
-    else throw new ApolloError('Error encountered');
+        if (user && notification) return survey
+        else throw new ApolloError('Error encountered');
+    } else { return survey }
 })
 
 module.exports = {

@@ -10,7 +10,6 @@ type Mutation{
     questions: [QuestionInput]
     ): Survey
     response_survey(surveyId: ID!, responses: [AnswerSurvey]): Survey
-    publish_survey(surveyId: ID!, status: Boolean!): Survey
 }
 
 

@@ -1,4 +1,6 @@
 const chatbotController = require('../controllers/chatbotController')
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 module.exports = {
     Query: {
         tl_questions: () => {
@@ -10,7 +12,9 @@ module.exports = {
     },
     Mutation: {
         ask: (_, args) => {
-            return chatbotController.getAnswer(args.question)
+            const answer = chatbotController.getAnswer(args.question)
+            pubsub.publish("GET_MESSAGE", { messageConvo: answer })
+            return answer
         },
         create_chatbot: (_, args) => {
             return chatbotController.createChatbot(args)
@@ -26,6 +30,16 @@ module.exports = {
         },
         deleteEnQuestion: (_, args) => {
             return chatbotController.deleteEnQuestion(args)
+        }
+    },
+    Subscription: {
+        messageConvo: {
+            subscribe: () => pubsub.asyncIterator(["GET_MESSAGE"]),
+        },
+        notification: {
+            subscribe: (_, args) => {
+                return pubsub.asyncIterator(`steam_${args.id}`)
+            }
         }
     }
 }

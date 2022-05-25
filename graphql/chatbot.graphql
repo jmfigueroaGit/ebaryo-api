@@ -7,20 +7,24 @@ type Query{
 
 
 type Mutation{
-    ask(question: String!): Message
+    ask(question: String!): MessageChatbot
     create_chatbot(name: String,
     locale: String, data: [ChatbotDataInput]): Chatbot
-    answerTlChatbot(question: String!, answer: String!): Message
-    answerEnChatbot(question: String!, answer: String!): Message
+    answerTlChatbot(question: String!, answer: String!): MessageChatbot
+    answerEnChatbot(question: String!, answer: String!): MessageChatbot
     deleteTlQuestion(question: String!): MessageDelete
     deleteEnQuestion(question: String!): MessageDelete
+}
+
+type Subscription {
+    messageConvo: MessageChatbot
 }
 
 type MessageDelete{
     message: String
 }
 
-type Message{
+type MessageChatbot{
     answer: String
 }
 
