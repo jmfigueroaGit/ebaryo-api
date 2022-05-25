@@ -1,8 +1,11 @@
 const Resident = require('../models/residentModel')
 const User = require('../models/userModel')
+const userNotification = require('../models/userNotificationModel')
 const asyncHandler = require('express-async-handler')
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
+const generateToken = require('../utils/generateToken')
+const sendEmail = require('../utils/sendEmail')
 
 // @desc    Get All Residents
 // @access  Private || Admin
@@ -27,14 +30,11 @@ const getFilterResidents = asyncHandler(async (args) => {
             { 'residentId': { $regex: value } },
             { 'nationality': { $regex: value } },
             { 'mobileNumber': { $regex: value } },
-            { 'guardian.fullname': { $regex: value } },
-            { 'guardian.contact': { $regex: value } },
-            { 'guardian.relationship': { $regex: value } },
-            { 'guardian.address': { $regex: value } },
+            { 'email': { $regex: value } },
             { 'address.houseNumber': { $regex: value } },
             { 'address.street': { $regex: value } },
             { 'address.barangay': { $regex: value } },
-            { 'address.region': { $regex: value } },
+            { 'address.province': { $regex: value } },
             { 'address.city': { $regex: value } },
             { 'address.zipcode': { $regex: value } },
         ]
@@ -70,19 +70,54 @@ const getResidentById = asyncHandler(async (user_id) => {
 // @desc    Create resident
 // @access  Private 
 const createResident = asyncHandler(async (args) => {
-    const { first, middle, last, sex, birthday, nationality, mobileNumber, fullname, contact, relationship, address, houseNumber, street, barangay, region, city, zipcode } = args;
 
+    // Mapping values from argument
+    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode } = args;
+
+    // Find phone number in the Resident's database
     const phoneExists = await Resident.findOne({ mobileNumber });
 
+    // Check phone number if already existed 
     if (phoneExists) {
         throw new ApolloError('Phone number is already used');
     }
 
-    const user = await User.findById(args.user_id);
+    // Find email address in the Resident's database
+    const emailExists = await Resident.findOne({ email });
 
+    // Check email address if already existed 
+    if (emailExists) {
+        throw new ApolloError('Email address is already used');
+    }
+
+    // Create user account using email and auto-generated password
+    const user = await User.create({ email, password: generateToken(email) })
+
+    // Check if user account is created
     if (!user) {
         throw new ApolloError('User not existed');
     }
+
+    // Generate reset token
+    const resetToken = user.getResetPasswordToken()
+    await user.save({ validateBeforeSave: true })
+
+    const message = `Your password reset token: ${resetToken}`
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'E-baryo Account Verification',
+            message,
+        });
+    } catch (error) {
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save({ validateBeforeSave: false });
+        throw new ApolloError(error.message);
+    }
+
     const residentLength = await Resident.find()
     const running = leadingzero(residentLength.length + 1, 4)
     const residentId = 'rsdt-22-' + running;
@@ -94,18 +129,17 @@ const createResident = asyncHandler(async (args) => {
         birthday,
         nationality,
         mobileNumber,
-        guardian: {
-            fullname,
-            contact,
-            relationship,
-            address,
-        },
-        address: { houseNumber, street, barangay, region, city, zipcode },
+        email,
+        address: { houseNumber, street, barangay, province, city, zipcode },
         residentId
-    });
+    })
 
-    if (resident) {
-        return resident
+    const notification = await userNotification.create({ user: user._id })
+    if (resident && notification) {
+        return resident.populate({
+            path: 'user',
+            select: '_id email isVerified'
+        });
     } else {
         throw new ApolloError('Invalid user data');
     }

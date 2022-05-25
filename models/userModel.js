@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const crypto = require('crypto');
-const { customAlphabet } = require('nanoid')
 
 const userSchema = new mongoose.Schema(
 	{
@@ -21,8 +20,19 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
-		slugId: {
-			type: String,
+		hasNewNotif: {
+			type: Boolean,
+			default: false
+		},
+		image: {
+			public_id: {
+				type: String,
+
+			},
+			url: {
+				type: String,
+
+			},
 		},
 		resetPasswordToken: String,
 		resetPasswordExpire: Date,
@@ -40,12 +50,8 @@ userSchema.pre('save', async function (next) {
 	if (!this.isModified('password')) {
 		next();
 	}
-	const data = 'qwertyuiopasdfghjklzxcvbnm1234567890' + new Date().getTime()
-	const first_data = "ebaryobarangaymanagementsystemwithdatavisualizationandaichatbot"
-	const nanoid = customAlphabet(data, 10)
-	const first = customAlphabet(first_data, 10)
+
 	const salt = bcrypt.genSaltSync(10);
-	this.slugId = first(5) + "-" + nanoid(5);
 	this.password = await bcrypt.hashSync(this.password, salt);
 });
 

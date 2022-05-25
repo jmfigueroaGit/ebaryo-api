@@ -16,6 +16,9 @@ module.exports = {
         user: (_, args) => {
             return userController.getUserById(args.id)
         },
+        read_notif: (_, args) => {
+            return userController.readNotification(args)
+        }
     },
     Mutation: {
         login: (_, args, context) => {

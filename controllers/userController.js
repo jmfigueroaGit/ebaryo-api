@@ -167,6 +167,13 @@ const resetPassword = asyncHandler(async (args) => {
     return { success: true, message: 'Password Updated Successfully' }
 });
 
+const readNotification = asyncHandler(async (args) => {
+    const user = await User.findById(args.id)
+    user.hasNewNotif = false
+    await user.save()
+    return user
+})
+
 module.exports = {
     getAllUsers,
     getFilterUsers,
@@ -177,5 +184,6 @@ module.exports = {
     authToken,
     deleteUser,
     verifyEmail,
-    resetPassword
+    resetPassword,
+    readNotification
 }

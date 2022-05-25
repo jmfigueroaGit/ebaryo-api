@@ -1,11 +1,25 @@
 const mongoose = require('mongoose')
 
-const question = new mongoose.Schema({
+const questionSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['']
-    }
+        enum: ['multiple choice', 'checkbox', 'text']
+    },
+    question: {
+        type: String,
+        required: true
+    },
+    choices: [{ type: String }],
+    responses: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+            },
+            answer: [{ type: String }]
+        }
+    ]
 })
 
 const surveySchema = new mongoose.Schema(
@@ -20,9 +34,9 @@ const surveySchema = new mongoose.Schema(
         },
         publish: {
             type: Boolean,
-            required: true,
+            default: false,
         },
-
+        questions: [questionSchema]
     },
     {
         timestamps: true,

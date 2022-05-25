@@ -11,6 +11,7 @@ const residentSchema = new mongoose.Schema(
 			first: { type: String, required: true },
 			middle: { type: String, required: true },
 			last: { type: String, required: true },
+			extension: { type: String },
 		},
 		sex: {
 			type: String,
@@ -30,17 +31,16 @@ const residentSchema = new mongoose.Schema(
 			required: true,
 			unique: true
 		},
-		guardian: {
-			fullname: { type: String, required: true },
-			contact: { type: String, required: true },
-			relationship: { type: String, required: true },
-			address: { type: String, required: true },
+		email: {
+			type: String,
+			required: true,
+			unique: true
 		},
 		address: {
 			houseNumber: { type: String, required: true },
 			street: { type: String, required: true },
 			barangay: { type: String, required: true },
-			region: { type: String, required: true },
+			province: { type: String, required: true },
 			city: { type: String, required: true },
 			zipcode: { type: String, required: true },
 		},

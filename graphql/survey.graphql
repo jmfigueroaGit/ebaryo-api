@@ -1,0 +1,53 @@
+type Query{
+    surveys: [Survey]
+    survey(id: ID!): Survey
+}
+
+type Mutation{
+    create_survey(title: String!, 
+    description: String!,
+    publish: Boolean,
+    questions: [QuestionInput]
+    ): Survey
+    response_survey(surveyId: ID!, responses: [AnswerSurvey]): Survey
+    publish_survey(surveyId: ID!, status: Boolean!): Survey
+}
+
+
+type Survey{
+    title: String
+    description: String
+    publish: Boolean
+    questions: [Question]
+}
+
+type Question {
+    type: String
+    question: String
+    choices: [String]
+    responses: [Response]
+    _id: ID
+}
+
+type Response {
+    user: User
+    answer: [String]
+}
+
+input QuestionInput {
+    type: String!
+    question: String!
+    choices: [String]
+    responses: [ResponseInput]
+}
+
+input ResponseInput {
+    user: ID
+    answer: [String]
+}
+
+input AnswerSurvey {
+    user: ID!
+    answer: [String!]
+    _id: ID!
+}
