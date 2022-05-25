@@ -23,6 +23,31 @@ const createSurvey = asyncHandler(async (args) => {
     }
 });
 
+
+// @desc    Create barangay survey
+// @access  Private
+const updateSurvey = asyncHandler(async (args) => {
+    const { surveyId, title, description, questions } = args;
+
+    const survey = await Survey.findById(surveyId)
+    if (!survey) throw new ApolloError('Survey not found');
+    if (survey.publish === false) {
+        survey.title = title || survey.title
+        survey.description = description || survey.description
+        survey.questions = questions || survey.questions
+        survey.save()
+        if (survey) {
+            return survey
+        } else {
+            throw new ApolloError('Invalid data format');
+        }
+    }
+    else {
+        throw new ApolloError('Survey is currently published. Unabled to modify.');
+    }
+});
+
+
 const getSurveys = asyncHandler(async () => {
     const surveys = await Survey.find().populate({
         path: 'questions.responses.user',
@@ -83,5 +108,6 @@ module.exports = {
     createSurvey,
     getSurveys,
     submitResponce,
-    publishSurvey
+    publishSurvey,
+    updateSurvey
 };

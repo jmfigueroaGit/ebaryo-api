@@ -13,5 +13,8 @@ module.exports = {
         response_survey: (_, args) => {
             return surveyController.submitResponce(args);
         },
+        update_survey: (_, args) => {
+            return surveyController.updateSurvey(args);
+        }
     },
 }
