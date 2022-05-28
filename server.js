@@ -35,12 +35,6 @@ const { graphqlUploadExpress } = require('graphql-upload');
             origin: ["http://localhost:3000/", "https://studio.apollographql.com"]
         },
         plugins: [
-            process.env.NODE_ENV === 'production'
-            ? ApolloServerPluginLandingPageProductionDefault({
-                graphRef: "my-graph-id@my-graph-variant",
-                footer: false,
-                })
-            : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
             {
                 async serverWillStart() {
                     return {
