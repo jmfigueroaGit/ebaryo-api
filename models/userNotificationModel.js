@@ -1,5 +1,22 @@
 const mongoose = require('mongoose')
 
+const Notification = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['user', 'survey', 'annoucement', 'article', 'request']
+    },
+    description: {
+        type: String,
+    },
+    date: {
+        type: Date,
+        default: Date.now()
+    },
+    notifId: {
+        type: mongoose.Schema.Types.ObjectId,
+    }
+})
+
 const userNotificationSchema = new mongoose.Schema(
     {
         user: {
@@ -7,25 +24,7 @@ const userNotificationSchema = new mongoose.Schema(
             required: true,
             ref: 'User',
         },
-        notifications: [
-            {
-                type: {
-                    type: String,
-                    enum: ['user', 'survey', 'annoucement', 'article', 'request']
-                },
-                description: {
-                    type: String,
-                },
-                date: {
-                    type: Date,
-                    default: Date.now()
-                },
-                notifId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    unique: true
-                }
-            }
-        ]
+        notifications: [Notification]
     },
     {
         timestamps: true,

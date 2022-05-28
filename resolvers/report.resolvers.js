@@ -15,13 +15,13 @@ module.exports = {
         }
     },
     Mutation: {
-        create_report: (_, args) => {
+        report_create: (_, args) => {
             return reportController.createReport(args)
         },
-        update_report: (_, args) => {
+        report_update: (_, args) => {
             return reportController.updateReport(args)
         },
-        delete_report: (_, args) => {
+        report_delete: (_, args) => {
             return reportController.deleteReport(args)
         }
     }

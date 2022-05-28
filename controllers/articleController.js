@@ -1,35 +1,74 @@
 const Article = require('../models/articleModel');
+const Authorized = require('../models/authorizedModel');
 const User = require('../models/userModel');
 const userNotification = require('../models/userNotificationModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
+const cloudinary = require('cloudinary')
 
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});
 
 // @desc    Create barangay article
 // @access  Private || Admin
 const createArticle = asyncHandler(async (args) => {
-    const { user_id, image, title, body, publish } = args;
+    const { authorized_id, image, title, body, publish } = args;
 
-    const user = User.findById(user_id)
+    const personnel = Authorized.findById(authorized_id)
 
-    if (!user) {
+    if (!personnel) {
         throw new ApolloError('User not found')
     }
+
+    let imageUpload = null
+    const { createReadStream } = await image
+    const stream = createReadStream()
+
+    const cloudinaryUpload = async ({ stream }) => {
+        try {
+            await new Promise((resolve, reject) => {
+                const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/article" }, function (error, result) {
+                    if (result) {
+                        imageUpload = {
+                            public_id: result.public_id,
+                            url: result.secure_url
+                        }
+                        resolve({ imageUpload })
+                    } else {
+                        reject(error);
+                    }
+                });
+                stream.pipe(streamLoad);
+            });
+        }
+        catch (err) {
+            throw new Error(`Failed to upload article photo. Error :${err.message}`);
+        }
+    };
+
+    await cloudinaryUpload({ stream });
+
     const articleLength = await Article.find()
     const running = leadingzero(articleLength.length + 1, 4)
     const artclId = 'artcl-22-' + running;
 
     const article = await Article.create({
-        user: user_id,
-        image: image,
+        authorized: authorized_id,
+        image: imageUpload,
         title,
         body,
         publish,
         artclId
     });
 
-    if (article) return article
+    if (article) return article.populate({
+        path: 'authorized',
+        select: '_id name email phoneNumber sex position role isActive'
+    })
     else throw new ApolloError('Invalid data format');
 });
 
@@ -45,7 +84,10 @@ const updateArticle = asyncHandler(async (args) => {
         article.publish = args.publish || article.publish
 
         const updated_article = await article.save()
-        return updated_article
+        return updated_article.populate({
+            path: 'authorized',
+            select: '_id name email phoneNumber sex position role isActive'
+        })
     }
     else throw new Error('Article not found');
 
@@ -81,6 +123,24 @@ const getAllArticle = asyncHandler(async () => {
 
     return articles
 });
+
+// @desc    Filter barangay articles
+// @access  Private
+const filterArticles = asyncHandler(async (args) => {
+    const { value } = args
+    const articles = await Article.find({
+        "$or": [
+            { title: { $regex: value } },
+            { artclId: { $regex: value } },
+            { body: { $regex: value } }
+        ]
+    }).populate({
+        path: 'authorized',
+        select: '_id name email phoneNumber sex position role isActive'
+    })
+
+    return articles
+})
 
 // @desc    Update barangay article
 // @access  Private || Admin
@@ -121,5 +181,6 @@ module.exports = {
     deleteArticle,
     getArticle,
     getAllArticle,
-    publishArticle
+    publishArticle,
+    filterArticles
 };

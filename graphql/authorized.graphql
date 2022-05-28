@@ -6,7 +6,7 @@ type Query{
 type Mutation{
     personnel_auth(token: String!): Personnel
     personnel_login(email: String!, password: String!): Personnel_AuthPayload
-    personnel_signup(name: Personnel_Name, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel_AuthPayload
+    personnel_signup(name: Personnel_Name, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel
     personnel_update(id: ID!, name: String, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel
     personnel_delete(id: ID!): Message
     personnel_verify_email(email: String!): Reset
@@ -26,6 +26,7 @@ type Personnel {
     sex: String
     position: String
     role: String
+    isActive: Boolean
 }
 
 type Personel_Name{

@@ -7,15 +7,18 @@ module.exports = {
         announcement: (_, args) => {
             return announcementController.getAnnouncement(args)
         },
+        announcement_filter: (_, args) => {
+            return announcementController.filterAnnouncement(args)
+        }
     },
     Mutation: {
-        create_announcement: (_, args) => {
+        announcement_create: (_, args) => {
             return announcementController.createAnnouncement(args)
         },
-        update_announcement: (_, args) => {
+        announcement_update: (_, args) => {
             return announcementController.updateAnnouncement(args)
         },
-        delete_announcement: (_, args) => {
+        announcement_delete: (_, args) => {
             return announcementController.deleteAnnouncement(args)
         }
     }

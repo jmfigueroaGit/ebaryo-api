@@ -7,10 +7,6 @@ const feedbackModel = new mongoose.Schema(
             required: true,
             ref: 'User',
         },
-        title: {
-            type: String,
-            required: true
-        },
         description: {
             type: String,
             required: true
@@ -21,8 +17,8 @@ const feedbackModel = new mongoose.Schema(
         },
         status: {
             type: String,
-            default: 'Unread',
-            enum: ['Unread', 'Prioritized', 'Read', 'Actioned', 'Archived']
+            default: 'unread',
+            enum: ['unread', 'prioritized', 'read', 'actioned', 'archived']
         }
     },
     {

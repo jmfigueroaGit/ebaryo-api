@@ -2,19 +2,19 @@ const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema(
 	{
-		user: {
+		authorized: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
-			ref: 'User',
+			ref: 'Authorized',
 		},
 		image: {
 			public_id: {
 				type: String,
-				required: true,
+				default: "image.id"
 			},
 			url: {
 				type: String,
-				required: true,
+				default: "image url"
 			},
 		},
 		title: {

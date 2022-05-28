@@ -10,11 +10,13 @@ const authorizedSchema = new mongoose.Schema(
         },
         email: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         phoneNumber: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         sex: {
             type: String,
@@ -26,7 +28,6 @@ const authorizedSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            required: true,
             enum: ['Admin', 'Moderator'],
             default: "Moderator"
         },
@@ -34,6 +35,10 @@ const authorizedSchema = new mongoose.Schema(
             type: String,
             required: [true, 'This field is required'],
             select: false,
+        },
+        isActive: {
+            type: Boolean,
+            default: true
         },
         resetPasswordToken: String,
         resetPasswordExpire: Date,

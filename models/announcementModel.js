@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const annoucementSchema = new mongoose.Schema(
 	{
-		user: {
+		authorized: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
-			ref: 'User',
+			ref: 'Authorized',
 		},
 		image: {
 			public_id: {
@@ -16,6 +16,10 @@ const annoucementSchema = new mongoose.Schema(
 				type: String,
 				required: true,
 			},
+		},
+		subject: {
+			type: String,
+			required: true,
 		},
 		description: {
 			type: String,

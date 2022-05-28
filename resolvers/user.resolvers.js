@@ -1,7 +1,9 @@
 const userController = require('../controllers/userController')
+const { GraphQLUpload } = require('graphql-upload');
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 module.exports = {
+    Upload: GraphQLUpload,
     Query: {
         users: () => {
             const users = userController.getAllUsers()
@@ -16,34 +18,34 @@ module.exports = {
         user: (_, args) => {
             return userController.getUserById(args.id)
         },
-        read_notif: (_, args) => {
+        user_read_notif: (_, args) => {
             return userController.readNotification(args)
         }
     },
     Mutation: {
-        login: (_, args, context) => {
+        user_login: (_, args, context) => {
             const user = userController.authUser(args.email, args.password)
             pubsub.publish('LOGIN_USER', {
                 loginUser: user
             })
             return user
         },
-        signup: (_, args) => {
-            return userController.signupUser(args.email, args.password)
+        user_signup: (_, args) => {
+            return userController.signupUser(args)
         },
-        update: (_, args) => {
+        user_update: (_, args) => {
             return userController.updateUser(args)
         },
-        auth: (_, args) => {
+        user_auth: (_, args) => {
             return userController.authToken(args.token)
         },
-        delete: (_, args) => {
+        user_delete: (_, args) => {
             return userController.deleteUser(args.id)
         },
-        verify_email: (_, args) => {
+        user_verify_email: (_, args) => {
             return userController.verifyEmail(args.email)
         },
-        reset_password: (_, args) => {
+        user_reset_password: (_, args) => {
             return userController.resetPassword(args)
         }
     },
@@ -51,7 +53,7 @@ module.exports = {
         users: {
             subscribe: () => pubsub.asyncIterator(["GET_USERS"]),
         },
-        loginUser: {
+        user_loginUser: {
             subscribe: () => pubsub.asyncIterator(["LOGIN_USER"]),
         },
     }

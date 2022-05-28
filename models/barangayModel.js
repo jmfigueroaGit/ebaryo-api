@@ -73,46 +73,35 @@ const barangayInfo = new mongoose.Schema({
 const mainOfficial = new mongoose.Schema({
     name: {
         type: String,
-        required: true
     },
     position: {
         type: String,
-        required: true
     },
     image: {
         type: String,
     }
 })
-
 const skOfficial = new mongoose.Schema({
     name: {
         type: String,
-        required: true
     },
     position: {
         type: String,
-        required: true
     },
     image: {
         type: String,
     }
 })
-
 const barangayOfficials = new mongoose.Schema({
     barangayOfficials: [mainOfficial],
     skOfficials: [skOfficial]
 })
-
-
-
 const image = new mongoose.Schema({
     public_id: {
         type: String,
-        required: true
     },
     url: {
         type: String,
-        required: true
     }
 })
 

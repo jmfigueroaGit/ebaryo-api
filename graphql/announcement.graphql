@@ -1,21 +1,28 @@
+scalar Upload
+
 type Query{
     announcements: [Announcement]
     announcement(id: ID!): Announcement
+    announcement_filter(value: String!): [Announcement]
 }
 
 type Mutation{
-    create_announcement(user_id: ID!, image: ImageInput, description: String!, postedUntil: Date!, publish: Boolean): Announcement
-    update_announcement(announce_id: ID!, image: ImageInput, description: String, postedUntil: Date, viewCounts: Int, publish: Boolean): Announcement
-    delete_announcement(announce_id: ID!): Message  
+    announcement_create(user_id: ID!, image: Upload!, subject: String!, description: String!, postedUntil: Date!, publish: Boolean): Announcement
+    announcement_update(announce_id: ID!, image: Upload, subject: String!, description: String, postedUntil: Date, viewCounts: Int, publish: Boolean): Announcement
+    announcement_delete(announce_id: ID!): Message  
 }
 
 type Announcement {
-    _id: ID!
-    user_id: ID!
+    _id: ID
+    authorized: Personnel
     image: Image
-    description: String!
-    postedUntil: Date!
-    viewCounts: Int!
+    subject: String
+    description: String
+    postedUntil: Date
+    viewCounts: Int
+    publish: Boolean
+    ancmtId: String
+    
 }
 
 type Image{

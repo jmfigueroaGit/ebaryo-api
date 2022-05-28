@@ -6,13 +6,20 @@ const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const generateToken = require('../utils/generateToken')
 const sendEmail = require('../utils/sendEmail')
+const cloudinary = require('cloudinary')
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});
 
 // @desc    Get All Residents
 // @access  Private || Admin
 const getAllResidents = asyncHandler(async () => {
     const residents = await Resident.find().populate({
         path: 'user',
-        select: '_id email isVerified'
+        select: '_id email isVerified hasNewNotif image'
     })
     return residents
 });
@@ -26,6 +33,7 @@ const getFilterResidents = asyncHandler(async (args) => {
             { 'name.first': { $regex: value } },
             { 'name.middle': { $regex: value } },
             { 'name.last': { $regex: value } },
+            { 'name.extension': { $regex: value } },
             { 'sex': { $regex: value } },
             { 'residentId': { $regex: value } },
             { 'nationality': { $regex: value } },
@@ -50,7 +58,7 @@ const getFilterResidents = asyncHandler(async (args) => {
 const getResident = asyncHandler(async (id) => {
     const resident = await Resident.findById(id).populate({
         path: 'user',
-        select: '_id email isVerified'
+        select: '_id email isVerified hasNewNotif image'
     })
     if (resident) return resident
     else throw new ApolloError('Resident not existed with this ID');
@@ -61,7 +69,7 @@ const getResident = asyncHandler(async (id) => {
 const getResidentById = asyncHandler(async (user_id) => {
     const resident = await Resident.findOne({ user: user_id }).populate({
         path: 'user',
-        select: '_id email isVerified'
+        select: '_id email isVerified hasNewNotif image'
     })
     if (resident) return resident
     else throw new ApolloError(`Resident not existed with this User's ID`);
@@ -72,7 +80,8 @@ const getResidentById = asyncHandler(async (user_id) => {
 const createResident = asyncHandler(async (args) => {
 
     // Mapping values from argument
-    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode } = args;
+    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode, photo } = args;
+    const { createReadStream } = await photo
 
     // Find phone number in the Resident's database
     const phoneExists = await Resident.findOne({ mobileNumber });
@@ -90,8 +99,39 @@ const createResident = asyncHandler(async (args) => {
         throw new ApolloError('Email address is already used');
     }
 
+    // Upload image to cloudinary
+    const stream = createReadStream()
+    let url = null, public_id = null;
+    const cloudinaryUpload = async ({ stream }) => {
+        try {
+            await new Promise((resolve, reject) => {
+                const streamLoad = cloudinary.v2.uploader.upload_stream(function (error, result) {
+                    if (result) {
+                        url = result.secure_url;
+                        public_id = result.public_id;
+                        resolve({ url, public_id })
+                    } else {
+                        reject(error);
+                    }
+                });
+                stream.pipe(streamLoad);
+            });
+        }
+        catch (err) {
+            throw new ApolloError(`Failed to upload profile picture ! Err:${err.message}`);
+        }
+    };
+    await cloudinaryUpload({ stream });
+
     // Create user account using email and auto-generated password
-    const user = await User.create({ email, password: generateToken(email) })
+    const user = await User.create({
+        email,
+        password: generateToken(email),
+        image: {
+            url,
+            public_id
+        }
+    })
 
     // Check if user account is created
     if (!user) {
@@ -134,11 +174,12 @@ const createResident = asyncHandler(async (args) => {
         residentId
     })
 
-    const notification = await userNotification.create({ user: user._id })
-    if (resident && notification) {
+
+    if (resident) {
+        await userNotification.create({ user: user._id })
         return resident.populate({
             path: 'user',
-            select: '_id email isVerified'
+            select: '_id email isVerified hasNewNotif image'
         });
     } else {
         throw new ApolloError('Invalid user data');
@@ -154,18 +195,16 @@ const updateResident = asyncHandler(async (args) => {
         resident.name.first = args.first || resident.name.first
         resident.name.middle = args.middle || resident.name.middle
         resident.name.last = args.last || resident.name.last
+        resident.name.extension = args.extension || resident.name.extension
         resident.sex = args.sex || resident.sex
         resident.birthday = args.birthday || resident.birthday
         resident.nationality = args.nationality || resident.nationality
         resident.mobileNumber = args.mobileNumber || resident.mobileNumber
-        resident.guardian.fullname = args.fullname || resident.guardian.fullname
-        resident.guardian.contact = args.contact || resident.guardian.contact
-        resident.guardian.relationship = args.relationship || resident.guardian.relationship
-        resident.guardian.address = args.address || resident.guardian.address
+        resident.email = args.email || resident.email
         resident.address.houseNumber = args.houseNumber || resident.address.houseNumber
         resident.address.street = args.street || resident.address.street
         resident.address.barangay = args.barangay || resident.address.barangay
-        resident.address.region = args.region || resident.address.region
+        resident.address.province = args.province || resident.address.province
         resident.address.city = args.city || resident.address.city
         resident.address.zipcode = args.zipcode || resident.address.zipcode
 

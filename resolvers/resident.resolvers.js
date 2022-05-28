@@ -15,13 +15,13 @@ module.exports = {
         }
     },
     Mutation: {
-        create_resident: (_, args) => {
+        resident_create: (_, args) => {
             return residentController.createResident(args)
         },
-        update_resident: (_, args) => {
+        resident_update: (_, args) => {
             return residentController.updateResident(args)
         },
-        delete_resident: (_, args) => {
+        resident_delete: (_, args) => {
             return residentController.deleteResident(args)
         }
     }

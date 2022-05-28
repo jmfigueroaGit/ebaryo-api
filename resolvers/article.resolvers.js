@@ -7,15 +7,18 @@ module.exports = {
         article: (_, args) => {
             return articleController.getArticle(args)
         },
+        articles_filter: (_, args) => {
+            return articleController.filterArticles(args)
+        },
     },
     Mutation: {
-        create_article: (_, args) => {
+        article_create: (_, args) => {
             return articleController.createArticle(args)
         },
-        update_article: (_, args) => {
+        article_update: (_, args) => {
             return articleController.updateArticle(args)
         },
-        delete_article: (_, args) => {
+        article_delete: (_, args) => {
             return articleController.deleteArticle(args)
         }
     }

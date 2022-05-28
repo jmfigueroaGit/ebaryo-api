@@ -4,16 +4,16 @@ type Query{
 }
 
 type Mutation{
-    create_survey(title: String!, 
+    survey_create(title: String!, 
     description: String!,
     questions: [QuestionInput]
     ): Survey
-    update_survey(surveyId: ID,
+    survey_update(surveyId: ID,
     title: String, 
     description: String,
     questions: [QuestionInput]
     ): Survey
-    response_survey(surveyId: ID!, responses: [AnswerSurvey]): Survey
+    survey_response(surveyId: ID!, responses: [AnswerSurvey]): Survey
 }
 
 

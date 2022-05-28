@@ -15,14 +15,15 @@ module.exports = {
         }
     },
     Mutation: {
-        create_request: (_, args) => {
+        request_create: (_, args) => {
             return requestController.createRequest(args)
         },
-        update_request: (_, args) => {
+        request_update: (_, args) => {
             return requestController.updateRequest(args)
         },
-        delete_request: (_, args) => {
+        request_delete: (_, args) => {
             return requestController.deleteRequest(args)
-        }
+        },
+
     }
 }

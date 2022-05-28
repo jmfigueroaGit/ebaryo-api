@@ -1,6 +1,7 @@
 const Request = require('../models/requestModel');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const userNotification = require('../models/userNotificationModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 
@@ -25,7 +26,10 @@ const createRequest = asyncHandler(async (args) => {
     });
 
     if (barangay_request) {
-        return barangay_request
+        return barangay_request.populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif'
+        })
     } else {
         throw new ApolloError('Invalid data format');
     }
@@ -120,6 +124,59 @@ const getUserRequests = asyncHandler(async (args) => {
     }
 });
 
+// @desc    Update barangay request
+// @access  Private || Admin
+const changeRequestStatus = asyncHandler(async (args) => {
+    const { request_id, status } = args
+
+    const request = await Request.findById(request_id)
+
+    let data = null
+
+    if (status === 'ready')
+        data = {
+            type: "request",
+            description: `Your ${request.request} is ready to claim.`,
+            notifId: request_id
+        }
+    else if (status === 'claimed')
+        data = {
+            type: "request",
+            description: `Your ${request.request} is successfully claimed.`,
+            notifId: request_id
+        }
+    else if (status === 'rejected')
+        data = {
+            type: "request",
+            description: `Your ${request.request} is rejected.`,
+            notifId: request_id
+        }
+
+    if (request) {
+        // Check if user existed
+        const user = await User.findById(request.user)
+        if (!user) throw new ApolloError('User not found')
+        // Check if user's notification existed
+        const notification = await userNotification.findOne({ user: user })
+        if (!notification) throw new ApolloError('Notication not found')
+
+        request.status = status
+        const updated_request = await request.save()
+
+        if (updated_request) {
+            notification.notifications.push(data)
+            notification.save()
+            return updated_request.populate({
+                path: 'user',
+                select: '_id email isVerified hasNewNotif'
+            })
+        }
+    } else {
+        throw new ApolloError('Request not existed with this ID')
+    }
+});
+
+
 module.exports = {
     createRequest,
     updateRequest,
@@ -127,5 +184,6 @@ module.exports = {
     getRequestById,
     getAllRequests,
     getUserRequests,
-    getFilterRequests
+    getFilterRequests,
+    changeRequestStatus
 };

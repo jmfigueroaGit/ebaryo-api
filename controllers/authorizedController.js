@@ -46,7 +46,7 @@ const createPersonnel = asyncHandler(async (args) => {
 
     const personnel = await Authorized.create({ name, email, password, phoneNumber, sex, position, role })
 
-    if (personnel) return { personnel, token: generateToken(personnel._id) }
+    if (personnel) return personnel
     else throw new ApolloError("Invalid user data")
 })
 

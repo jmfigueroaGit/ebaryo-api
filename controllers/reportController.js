@@ -9,10 +9,13 @@ const leadingzero = require('leadingzero')
 const createReport = asyncHandler(async (args) => {
     const { user_id, report, description } = args;
 
+
     const user = await User.findById(user_id)
+    if (!user) throw new ApolloError("User not found")
     const reportLength = await Report.find()
     const running = leadingzero(reportLength.length + 1, 4)
     const transactionId = 'rprt-22-' + running;
+    console.log(user_id)
     if (user.isVerified === false) {
         throw new ApolloError('User must verified first')
     }
@@ -25,7 +28,10 @@ const createReport = asyncHandler(async (args) => {
     })
 
     if (barangay_report) {
-        return barangay_report
+        return barangay_report.populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
     } else {
         throw new ApolloError('Invalid data format');
     }
@@ -42,7 +48,10 @@ const updateReport = asyncHandler(async (args) => {
 
         const updated_report = await report.save()
 
-        return updated_report
+        return updated_report.populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
     } else {
         throw new ApolloError('Report not existed with this ID')
     }
@@ -66,8 +75,8 @@ const deleteReport = asyncHandler(async (args) => {
 const getReportById = asyncHandler(async (args) => {
     const report = await Report.findById(args.id).populate({
         path: 'user',
-        select: '_id email  isVerified'
-    });
+        select: '_id email isVerified hasNewNotif image'
+    })
 
     if (report) {
         return report
@@ -82,7 +91,7 @@ const getReportById = asyncHandler(async (args) => {
 const getAllReports = asyncHandler(async () => {
     const reports = await Report.find().populate({
         path: 'user',
-        select: '_id email  isVerified'
+        select: '_id email isVerified hasNewNotif image'
     })
 
     return reports
@@ -95,11 +104,12 @@ const getFilterReports = asyncHandler(async (args) => {
             { report: { $regex: args.value } },
             { description: { $regex: args.value } },
             { status: { $regex: value } },
-            { transactionId: { $regex: value } }
+            { transactionId: { $regex: value } },
+            { 'user.email': { $regex: value } }
         ]
     }).populate({
         path: 'user',
-        select: '_id email  isVerified'
+        select: '_id email isVerified hasNewNotif image'
     })
     return reports
 });
@@ -109,8 +119,8 @@ const getFilterReports = asyncHandler(async (args) => {
 const getUserReports = asyncHandler(async (args) => {
     const reports = await Report.find({ user: args.user_id }).populate({
         path: 'user',
-        select: '_id email  isVerified'
-    });
+        select: '_id email isVerified hasNewNotif image'
+    })
 
     if (reports) {
         return reports

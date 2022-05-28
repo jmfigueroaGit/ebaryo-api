@@ -1,17 +1,20 @@
+scalar Upload
+
 type Query{
     articles: [Article]
     article(id: ID!): Article
+    articles_filter(value: String!): [Article]
 }
 
 type Mutation{
-    create_article(user_id: ID!, image: ImageInput, title: String!, body: String!, publish: Boolean): Article
-    update_article(article_id: ID!, image: ImageInput, title: String, body: String, publish: Boolean): Article
-    delete_article(article_id: ID!): Message  
+    article_create(authorized_id: ID!, image: Upload!, title: String!, body: String!, publish: Boolean): Article
+    article_update(article_id: ID!, image: Upload, title: String, body: String, publish: Boolean): Article
+    article_delete(article_id: ID!): Message  
 }
 
 type Article {
     _id: ID!
-    user_id: ID!
+    authorized: Personnel
     image: Image
     title: String!
     body: String!

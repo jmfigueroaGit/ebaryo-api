@@ -7,13 +7,13 @@ module.exports = {
         }
     },
     Mutation: {
-        create_survey: (_, args) => {
+        survey_create: (_, args) => {
             return surveyController.createSurvey(args);
         },
-        response_survey: (_, args) => {
+        survey_response: (_, args) => {
             return surveyController.submitResponce(args);
         },
-        update_survey: (_, args) => {
+        survey_update: (_, args) => {
             return surveyController.updateSurvey(args);
         }
     },

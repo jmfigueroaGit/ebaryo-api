@@ -1,12 +1,16 @@
+scalar Upload
+
 type Query{
     barangays: [Barangay]
     barangay(id: ID!): Barangay
 }
 
 type Mutation{
-    create_barangay(barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, images: [ImageInput]): Barangay
-    update_barangay(barangay_id: ID!, barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, images: [ImageInput]): Barangay
-    delete_barangay(barangay_id: ID!): Message  
+    barangay_info_setup(barangayInfo: BarangayInfoInput): Barangay
+    barangay_officials_setup(barangay_id: ID!, barangayOfficials: BarangayOfficialsInput): Barangay
+    barangay_images_setup(barangay_id: ID!, image: [Upload!]): Barangay
+    barangay_update(barangay_id: ID!, barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, image: [ImageInput]): Barangay
+    barangay_delete(barangay_id: ID!): Message  
 }
 
 type Barangay {

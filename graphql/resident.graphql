@@ -1,3 +1,5 @@
+scalar Upload
+
 type Query{
     residents: [Resident]
     residents_filter(value: String!): [Resident]
@@ -6,7 +8,7 @@ type Query{
 }
 
 type Mutation{
-    create_resident(
+    resident_create(
         first: String!,
         middle: String!,
         last: String!,
@@ -22,26 +24,28 @@ type Mutation{
         province: String!,
         city: String!,
         zipcode: String!,
+        photo: Upload!
     ): Resident
-    update_resident(
+    resident_update(
         user_id: ID!,
-        first: String!,
-        middle: String!,
-        last: String!,
+        first: String,
+        middle: String,
+        last: String,
         extension: String,
-        sex: String!,
-        birthday: Date!,
-        nationality: String!,
-        mobileNumber: String!,
-        email: String!,
-        houseNumber: String!,
-        street: String!,
-        barangay: String!,
-        province: String!,
-        city: String!,
-        zipcode: String!,
+        sex: String,
+        birthday: Date,
+        nationality: String,
+        mobileNumber: String,
+        email: String,
+        houseNumber: String,
+        street: String,
+        barangay: String,
+        province: String,
+        city: String,
+        zipcode: String,
+        photo: Upload
     ): Resident
-    delete_resident(id: ID!): Message
+    resident_delete(id: ID!): Message
 }
 
 scalar Date

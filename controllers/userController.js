@@ -6,6 +6,7 @@ const Resident = require('../models/residentModel')
 const generateToken = require('../utils/generateToken')
 const sendEmail = require('../utils/sendEmail')
 const crypto = require('crypto');
+const cloudinary = require('cloudinary')
 
 // @desc    Get All Users
 // @access  Private || Admin
@@ -52,12 +53,49 @@ const authUser = asyncHandler(async (email, password) => {
 
 // @desc    signup user
 // @access  Public 
-const signupUser = asyncHandler(async (email, password) => {
+
+const signupUser = asyncHandler(async (args) => {
+    const { email, password, file } = args
+    const { createReadStream } = await file
+    cloudinary.config({
+        cloud_name: process.env.CLOUD_NAME,
+        api_key: process.env.API_KEY,
+        api_secret: process.env.API_SECRET,
+    });
+    const stream = createReadStream()
+    let url = null, public_id = null;
+    const cloudinaryUpload = async ({ stream }) => {
+        try {
+            await new Promise((resolve, reject) => {
+                const streamLoad = cloudinary.v2.uploader.upload_stream(function (error, result) {
+                    if (result) {
+                        url = result.secure_url;
+                        public_id = result.public_id;
+                        resolve({ url, public_id })
+                    } else {
+                        reject(error);
+                    }
+                });
+                stream.pipe(streamLoad);
+            });
+        }
+        catch (err) {
+            throw new Error(`Failed to upload profile picture ! Err:${err.message}`);
+        }
+    };
+    await cloudinaryUpload({ stream });
     const emailExist = await User.findOne({ email })
 
     if (emailExist) throw new ApolloError("Email is already used")
 
-    const user = await User.create({ email, password })
+    const user = await User.create({
+        email,
+        password,
+        image: {
+            url,
+            public_id
+        }
+    })
 
     if (user) return { user, token: generateToken(user._id) }
     else throw new ApolloError("Invalid user data")
@@ -158,7 +196,7 @@ const resetPassword = asyncHandler(async (args) => {
 
     // Setup the new password
     user.password = args.password;
-
+    user.isVerified = true
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 

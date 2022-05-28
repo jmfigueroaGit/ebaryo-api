@@ -6,16 +6,16 @@ type Query{
 }
 
 type Mutation{
-    create_report(user_id: ID!, report: String!, description: String!): Report
-    update_report(report_id: ID!, report: String, description: String): Report
-    delete_report(report_id: ID!): Message  
+    report_create(user_id: ID!, report: String!, description: String!): Report
+    report_update(report_id: ID!, report: String, description: String): Report
+    report_delete(report_id: ID!): Message  
 }
 
 type Report {
-    _id: ID!
-    user_id: ID!
-    report: String!
-    description: String!
+    _id: ID
+    report: String
+    description: String
     user: User
     transactionId: String
+    status: String
 }

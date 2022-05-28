@@ -9,13 +9,19 @@ module.exports = {
         },
     },
     Mutation: {
-        create_barangay: (_, args) => {
-            return barangayController.createBarangay(args)
+        barangay_info_setup: (_, args) => {
+            return barangayController.setupBarangayInfo(args)
         },
-        update_barangay: (_, args) => {
+        barangay_officials_setup: (_, args) => {
+            return barangayController.setupBarangayOfficial(args)
+        },
+        barangay_images_setup: (_, args) => {
+            return barangayController.setupBarangayImages(args)
+        },
+        barangay_update: (_, args) => {
             return barangayController.updateBarangay(args)
         },
-        delete_barangay: (_, args) => {
+        barangay_delete: (_, args) => {
             return barangayController.deleteBarangay(args)
         }
     }

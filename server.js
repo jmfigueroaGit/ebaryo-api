@@ -8,6 +8,7 @@ const { loadFilesSync } = require('@graphql-tools/load-files')
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
 const { ApolloServer } = require('apollo-server-express');
+const { graphqlUploadExpress } = require('graphql-upload');
 
 (async function () {
     dotenv.config();
@@ -43,6 +44,7 @@ const { ApolloServer } = require('apollo-server-express');
     })
 
     await server.start();
+    app.use(graphqlUploadExpress())
     server.applyMiddleware({ app })
 
     dbConnect();

@@ -25,7 +25,7 @@ const requestSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			default: 'pending',
-			required: true
+			enum: ["pending", "ready", "rejected", "claimed"]
 		},
 		transactionId: {
 			type: String,

@@ -1,23 +1,21 @@
 type Query{
-    users: [User]
-    user(id: ID!): User
-    tl_questions: Data
-    en_questions: Data
+    chatbot_tl_questions: Data
+    chatbot_en_questions: Data
 }
 
 
 type Mutation{
-    ask(question: String!): MessageChatbot
-    create_chatbot(name: String,
+    chatbot_ask(question: String!): MessageChatbot
+    chatbot_create(name: String,
     locale: String, data: [ChatbotDataInput]): Chatbot
-    answerTlChatbot(question: String!, answer: String!): MessageChatbot
-    answerEnChatbot(question: String!, answer: String!): MessageChatbot
-    deleteTlQuestion(question: String!): MessageDelete
-    deleteEnQuestion(question: String!): MessageDelete
+    chatbot_tl_train(question: String!, answer: String!): MessageChatbot
+    chatbot_en_train(question: String!, answer: String!): MessageChatbot
+    chatbot_tl_delete(question: String!): MessageDelete
+    chatbot_en_delete(question: String!): MessageDelete
 }
 
 type Subscription {
-    messageConvo: MessageChatbot
+    chatbot_convo: MessageChatbot
 }
 
 type MessageDelete{
