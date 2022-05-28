@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 
 const blotterModel = new mongoose.Schema(
     {
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: 'User',
-        },
         caseType: {
             type: String,
             required: true
@@ -29,7 +24,9 @@ const blotterModel = new mongoose.Schema(
         },
         status: {
             type: String,
-            required: true
+            required: true,
+            default: "pending",
+            enum: ["pending", "on going", "closed"]
         }
     },
     {

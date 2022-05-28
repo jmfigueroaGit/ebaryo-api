@@ -1,0 +1,18 @@
+type Query{
+    feedbacks: [Feedback]
+    feedback(feedback_id: ID!): Feedback
+   
+}
+
+type Mutation{
+    feedback_create(user_id: ID!, description: String): Feedback
+    feedback_status(feedback_id: ID!, status: String!): Feedback
+}
+
+type Feedback{
+    _id: ID
+    user: User 
+    description: String 
+    fdbkId: String 
+    status: String 
+}

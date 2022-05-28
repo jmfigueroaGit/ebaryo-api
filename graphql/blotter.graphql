@@ -1,0 +1,20 @@
+type Query {
+    blotters: [Blotter]
+    blotter(blotter_id: ID!): Blotter
+}
+
+type Mutation {
+    blotter_create(caseType: String!, description: String!, complainant: String!, defendant: String!): Blotter
+    blotter_update(blotter_id: ID!, caseType: String, description: String, complainant: String, defendant: String): Blotter
+    blotter_status(blotter_id: ID!, status: String!): Blotter
+}
+
+type Blotter {
+    _id: ID
+    caseType: String
+    description: String
+    complainant: String
+    defendant: String
+    bltrId: String
+    status: String
+}

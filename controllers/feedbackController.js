@@ -23,7 +23,10 @@ const createFeedback = asyncHandler(async (args) => {
         fdbkId
     })
 
-    if (feedback) return feedback
+    if (feedback) return feedback.populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
     else throw new ApolloError('Invalid data formatted')
 })
 
@@ -31,7 +34,10 @@ const createFeedback = asyncHandler(async (args) => {
 // @desc    GET ALL barangay feedbacks
 // @access  Private
 const getFeedbacks = asyncHandler(async () => {
-    const feedbacks = await Feedback.find()
+    const feedbacks = await Feedback.find().populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
 
     if (feedbacks) return feedbacks
     else throw new ApolloError('Invalid data formatted')
@@ -39,7 +45,10 @@ const getFeedbacks = asyncHandler(async () => {
 // @desc    GET Single barangay feedback
 // @access  Private
 const getFeedback = asyncHandler(async (args) => {
-    const feedback = await Feedback.findById(args.feedback_id)
+    const feedback = await Feedback.findById(args.feedback_id).populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
 
     if (feedback) return feedback
     else throw new ApolloError('Feedback not found')
@@ -49,7 +58,10 @@ const getFeedback = asyncHandler(async (args) => {
 // @access  Private
 const updateFeedbackStatus = asyncHandler(async (args) => {
     const { feedback_id, status } = args
-    const feedback = await Feedback.findById(feedback_id)
+    const feedback = await Feedback.findById(feedback_id).populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
 
     if (!feedback) throw new ApolloError('Feedback not found')
 
