@@ -106,7 +106,12 @@ const image = new mongoose.Schema({
 })
 
 const barangaySchema = new mongoose.Schema(
-    {
+    {   
+        authorized: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Authorized',
+		},
         barangayInfo: barangayInfo,
         barangayOfficials: barangayOfficials,
         images: [image]

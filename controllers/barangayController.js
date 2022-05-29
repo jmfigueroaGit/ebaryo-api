@@ -1,4 +1,5 @@
 const Barangay = require('../models/barangayModel');
+const Authorized = require('../models/authorizedModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const cloudinary = require('cloudinary')
@@ -115,8 +116,10 @@ const deleteBarangay = asyncHandler(async (args) => {
 
 // @desc    Get barangay
 // @access  Private 
-const getBarangayById = asyncHandler(async (args) => {
-    const barangay = await Barangay.findById(args.id)
+const getBarangay = asyncHandler(async (args) => {
+    const authorized = await Authorized.findOne({role: "Admin"})
+    if(!authorized) throw new ApolloError("Admin not found");
+    const barangay = await Barangay.findOne({ authorized: authorized })
 
     if (barangay) {
         return barangay
@@ -139,6 +142,6 @@ module.exports = {
     setupBarangayImages,
     updateBarangay,
     deleteBarangay,
-    getBarangayById,
+    getBarangay,
     getAllBarangay
 };

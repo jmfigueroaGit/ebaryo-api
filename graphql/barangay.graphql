@@ -2,7 +2,7 @@ scalar Upload
 
 type Query{
     barangays: [Barangay]
-    barangay(id: ID!): Barangay
+    barangay: Barangay
 }
 
 type Mutation{
@@ -14,7 +14,8 @@ type Mutation{
 }
 
 type Barangay {
-    _id: ID!
+    _id: ID
+    authorized: Personnel
     barangayInfo: BarangayInfo,
     barangayOfficials: BarangayOfficials,
     images: [Image]
@@ -46,7 +47,7 @@ type Demographic{
     households: Int
     landAreas: Int
     streets: Int
-    healthCenter: Int
+    healthCenters: Int
     schools: Int
 }
 

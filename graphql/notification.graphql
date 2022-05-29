@@ -1,5 +1,9 @@
 scalar Date
 
+type Query{
+    notification_user(notif_id: ID!): Notifications
+}
+
 type Mutation{
     publish_survey(surveyId: ID!, status: Boolean!): Survey
     publish_article(articleId: ID!, status: Boolean!): Article
@@ -11,8 +15,9 @@ type Subscription{
 
 type Notifications{
     _id: ID
-    user: ID
+    user: User
     notifications: [Notification]
+    createdAt: Date
 }
 
 type Notification{

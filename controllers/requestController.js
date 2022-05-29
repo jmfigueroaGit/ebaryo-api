@@ -28,7 +28,7 @@ const createRequest = asyncHandler(async (args) => {
     if (barangay_request) {
         return barangay_request.populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif'
+            select: '_id email isVerified hasNewNotif image'
         })
     } else {
         throw new ApolloError('Invalid data format');
@@ -46,7 +46,10 @@ const updateRequest = asyncHandler(async (args) => {
 
         const updated_request = await request.save()
 
-        return updated_request
+        return updated_request.populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
     } else {
         throw new ApolloError('Request not existed with this ID')
     }
@@ -74,7 +77,10 @@ const getRequestById = asyncHandler(async (args) => {
     });
 
     if (request) {
-        return request
+        return request.populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
 
     } else {
         throw new ApolloError('Request not found');
@@ -86,7 +92,7 @@ const getRequestById = asyncHandler(async (args) => {
 const getAllRequests = asyncHandler(async () => {
     const requests = await Request.find().populate({
         path: 'user',
-        select: '_id email  isVerified '
+        select: '_id email isVerified hasNewNotif image'
     })
 
     return requests
@@ -105,7 +111,7 @@ const getFilterRequests = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'user',
-        select: '_id email  isVerified '
+        select: '_id email isVerified hasNewNotif image'
     })
 
     return requests
@@ -116,8 +122,8 @@ const getFilterRequests = asyncHandler(async (args) => {
 const getUserRequests = asyncHandler(async (args) => {
     const requests = await Request.find({ user: args.user_id }).populate({
         path: 'user',
-        select: '_id email  isVerified'
-    });
+        select: '_id email isVerified hasNewNotif image'
+    })
 
     if (requests) {
         return requests

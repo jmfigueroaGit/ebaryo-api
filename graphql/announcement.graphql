@@ -22,7 +22,7 @@ type Announcement {
     viewCounts: Int
     publish: Boolean
     ancmtId: String
-    
+    createdAt: Date
 }
 
 type Image{

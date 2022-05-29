@@ -1,10 +1,16 @@
 const surveyController = require('../controllers/surveyController')
 const articleController = require('../controllers/articleController')
 const requestController = require('../controllers/requestController')
+const userNotificationController = require('../controllers/userNotificationController')
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
 module.exports = {
+    Query: {
+        notification_user: (_, args) => {
+            return userNotificationController.getNotificationById(args)
+        }
+    },
     Mutation: {
         publish_survey: (_, args) => {
             const notif = surveyController.publishSurvey(args)

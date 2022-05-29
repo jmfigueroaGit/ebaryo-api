@@ -19,4 +19,5 @@ type Request {
     user: User
     status: String
     transactionId: String
+    createdAt: Date
 }
