@@ -1,6 +1,7 @@
 const Resident = require('../models/residentModel')
 const User = require('../models/userModel')
 const userNotification = require('../models/userNotificationModel')
+const ActivityLog = require('../models/activitylogModel')
 const asyncHandler = require('express-async-handler')
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
@@ -101,15 +102,17 @@ const createResident = asyncHandler(async (args) => {
 
     // Upload image to cloudinary
     const stream = createReadStream()
-    let url = null, public_id = null;
+    let imageUpload = null
     const cloudinaryUpload = async ({ stream }) => {
         try {
             await new Promise((resolve, reject) => {
-                const streamLoad = cloudinary.v2.uploader.upload_stream(function (error, result) {
+                const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/users" },function (error, result) {
                     if (result) {
-                        url = result.secure_url;
-                        public_id = result.public_id;
-                        resolve({ url, public_id })
+                        imageUpload = {
+                            public_id: result.public_id,
+                            url: result.secure_url
+                        }
+                        resolve({ imageUpload })
                     } else {
                         reject(error);
                     }
@@ -127,10 +130,7 @@ const createResident = asyncHandler(async (args) => {
     const user = await User.create({
         email,
         password: generateToken(email),
-        image: {
-            url,
-            public_id
-        }
+        image: imageUpload
     })
 
     // Check if user account is created
@@ -177,6 +177,7 @@ const createResident = asyncHandler(async (args) => {
 
     if (resident) {
         await userNotification.create({ user: user._id })
+        await ActivityLog.create({ user: user._id })
         return resident.populate({
             path: 'user',
             select: '_id email isVerified hasNewNotif image'

@@ -30,10 +30,6 @@ const { graphqlUploadExpress } = require('graphql-upload');
 
     const server = new ApolloServer({
         schema,
-        csrfPrevention: true,  // see below for more about this
-        cors: {
-            origin: ["http://localhost:3000/", "https://studio.apollographql.com"]
-        },
         plugins: [
             {
                 async serverWillStart() {

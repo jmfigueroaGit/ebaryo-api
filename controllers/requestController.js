@@ -1,6 +1,7 @@
 const Request = require('../models/requestModel');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const ActivityLog = require('../models/activitylogModel')
 const userNotification = require('../models/userNotificationModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
@@ -26,6 +27,16 @@ const createRequest = asyncHandler(async (args) => {
     });
 
     if (barangay_request) {
+        const activity = await ActivityLog.findOne({ user: user})
+        const data = {
+            type: "request",
+            description: `You successfully requested ${barangay_request.request}`,
+            activityId: barangay_request._id
+        }
+
+        activity.activities.push(data)
+        activity.save()
+
         return barangay_request.populate({
             path: 'user',
             select: '_id email isVerified hasNewNotif image'

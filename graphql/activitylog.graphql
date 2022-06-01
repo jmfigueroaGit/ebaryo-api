@@ -1,0 +1,19 @@
+scalar Date
+
+type Query{
+    activity_user(userId: ID!): ActivityLog
+}
+
+type ActivityLog{
+    _id: ID
+    user: User
+    activities: [Activity]
+    createdAt: Date
+}
+
+type Activity{
+    type: String
+    description: String
+    date: Date
+    activityId: ID
+}

@@ -1,5 +1,5 @@
 scalar Upload
-
+scalar Date
 type Query{
     residents: [Resident]
     residents_filter(value: String!): [Resident]
@@ -48,12 +48,12 @@ type Mutation{
     resident_delete(id: ID!): Message
 }
 
-scalar Date
+
 
 type Resident {
     _id: ID!
     name: Name
-    sex: String!
+    sex: String
     birthday: Date
     nationality: String
     mobileNumber: String

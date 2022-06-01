@@ -16,7 +16,7 @@ const residentSchema = new mongoose.Schema(
 		sex: {
 			type: String,
 			required: true,
-			enum: ['Male', 'Female'],
+			enum: ['male', 'female'],
 		},
 		birthday: {
 			type: Date,

@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const { ApolloError } = require('apollo-server')
 const jwt = require("jsonwebtoken");
 const User = require('../models/userModel')
+
 const Resident = require('../models/residentModel')
 const generateToken = require('../utils/generateToken')
 const sendEmail = require('../utils/sendEmail')
@@ -44,7 +45,6 @@ const authUser = asyncHandler(async (email, password) => {
     const user = await User.findOne({ email }).select('+password')
 
     if (user && (await user.comparePassword(password))) {
-
         return { user, token: generateToken(user._id) }
     }
     else

@@ -1,4 +1,5 @@
 const userNotification = require('../models/userNotificationModel');
+const ActivityLog = require('../models/activitylogModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 
@@ -18,6 +19,23 @@ const getNotificationById = asyncHandler(async (args) => {
     }
 });
 
+// @desc    Get barangay
+// @access  Private 
+const getActivityLogById = asyncHandler(async (args) => {
+    const activitylog = await ActivityLog.findOne({ user: args.userId }).populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
+
+    if (activitylog) {
+        return activitylog
+    } else {
+        throw new ApolloError('Activity logs not found');
+    }
+});
+
+
 module.exports = {
-    getNotificationById
+    getNotificationById,
+    getActivityLogById
 };
