@@ -9,6 +9,9 @@ const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
 const { ApolloServer } = require('apollo-server-express');
 const { graphqlUploadExpress } = require('graphql-upload');
+import { ApolloServerPluginLandingPageLocalDefault,
+    ApolloServerPluginLandingPageProductionDefault
+} from "apollo-server-core";
 
 (async function () {
     dotenv.config();
