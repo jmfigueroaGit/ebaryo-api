@@ -35,6 +35,13 @@ const { graphqlUploadExpress } = require('graphql-upload');
             origin: '*',			// <- allow request from all domains
             credentials: true},
         plugins: [
+            // Install a landing page plugin based on NODE_ENV
+            process.env.NODE_ENV === 'production'
+            ? ApolloServerPluginLandingPageProductionDefault({
+                graphRef: "my-graph-id@my-graph-variant",
+                footer: false,
+            })
+            : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
             {
                 async serverWillStart() {
                     return {
