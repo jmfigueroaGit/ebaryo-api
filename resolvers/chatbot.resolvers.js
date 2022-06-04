@@ -13,7 +13,7 @@ module.exports = {
     Mutation: {
         chatbot_ask: (_, args) => {
             const answer = chatbotController.getAnswer(args.question)
-            pubsub.publish("GET_MESSAGE", { messageConvo: answer })
+            pubsub.publish("GET_MESSAGE", { chatbot_convo: answer })
             return answer
         },
         chatbot_create: (_, args) => {
