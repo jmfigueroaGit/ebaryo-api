@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Activity = new mongoose.Schema({
     type: {
         type: String,
-        enum: ['user', 'survey', 'request', 'report']
+        enum: ['user', 'survey', 'request']
     },
     description: {
         type: String,

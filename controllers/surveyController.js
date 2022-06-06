@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 const userNotification = require('../models/userNotificationModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
-
+const ActivityLog = require('../models/activitylogModel')
 
 // @desc    Create barangay survey
 // @access  Private
@@ -66,7 +66,7 @@ const getSurvey = asyncHandler(async (args) => {
 
 const submitResponce = asyncHandler(async (args) => {
     const survey = await Survey.findById(args.surveyId)
-
+    let userId = null
     if (!survey) throw new ApolloError('Survey not found!');
     const { responses } = args
     for (let i = 0; i < survey.questions.length; i++) {
@@ -75,12 +75,24 @@ const submitResponce = asyncHandler(async (args) => {
                 answer: responses[i].answer,
                 user: responses[i].user
             }
+            userId = responses[i].user
             survey.questions[i].responses.push(data);
         }
     }
 
-    if (survey.save())
+    if (survey.save()){
+        const activity = await ActivityLog.findOne({ user: userId})
+        const data = {
+            type: "survey",
+            description: `You submitted answers to  ${survey.title}`,
+            activityId: survey._id
+        }
+
+        activity.activities.push(data)
+        activity.save()
         return survey
+    }
+        
 })
 
 const publishSurvey = asyncHandler(async (args) => {
