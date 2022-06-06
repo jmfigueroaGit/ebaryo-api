@@ -18,6 +18,7 @@ type Mutation{
 
 
 type Survey{
+    _id: ID
     title: String
     description: String
     publish: Boolean

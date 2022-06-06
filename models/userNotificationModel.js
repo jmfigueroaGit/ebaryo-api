@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Notification = new mongoose.Schema({
     type: {
         type: String,
-        enum: ['user', 'survey', 'annoucement', 'article', 'request']
+        enum: ['user', 'survey', 'announcement', 'article', 'request']
     },
     description: {
         type: String,

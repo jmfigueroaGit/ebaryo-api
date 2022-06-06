@@ -10,6 +10,7 @@ const reportSchema = new mongoose.Schema(
 		report: {
 			type: String,
 			required: true,
+			enum: ["INCIDENT", "UTILITY PROBLEM", "COMMUNITY PROBLEM"]
 		},
 		description: {
 			type: String,

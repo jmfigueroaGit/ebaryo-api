@@ -9,7 +9,7 @@ module.exports = {
     Query: {
         notification_user: (_, args) => {
             return userNotificationController.getNotificationById(args)
-        }
+        },
     },
     Mutation: {
         publish_survey: (_, args) => {

@@ -4,6 +4,9 @@ module.exports = {
     Query: {
         surveys: () => {
             return surveyController.getSurveys()
+        },
+        survey: (_, args) => {
+            return surveyController.getSurvey(args)
         }
     },
     Mutation: {

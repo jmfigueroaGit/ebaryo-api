@@ -56,6 +56,14 @@ const getSurveys = asyncHandler(async () => {
     return surveys
 })
 
+const getSurvey = asyncHandler(async (args) => {
+    const survey = await Survey.findById(args.id).populate({
+        path: 'questions.responses.user',
+        select: '_id email isVerified'
+    })
+    return survey
+})
+
 const submitResponce = asyncHandler(async (args) => {
     const survey = await Survey.findById(args.surveyId)
 
@@ -107,6 +115,7 @@ const publishSurvey = asyncHandler(async (args) => {
 module.exports = {
     createSurvey,
     getSurveys,
+    getSurvey,
     submitResponce,
     publishSurvey,
     updateSurvey

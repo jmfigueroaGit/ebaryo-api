@@ -58,10 +58,12 @@ const createAnnouncement = asyncHandler(async (args) => {
         ancmtId
     });
 
-    if (announcement) return announcement.populate({
-        path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
-    })
+    if (announcement){ 
+        
+        return announcement.populate({
+            path: 'authorized',
+            select: '_id name email phoneNumber sex position role isActive'})
+    }
     else throw new ApolloError('Invalid data format');
 });
 
