@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
+const moment = require('moment')
 
 // @desc    Create barangay report
 // @access  Private
@@ -127,6 +128,24 @@ const getUserReports = asyncHandler(async (args) => {
     }
 });
 
+// @desc    Get all barangay report by date
+// @access  Private && Admin
+const getAllReportsByDate = asyncHandler(async (args) => {
+    const today = moment().startOf('day').subtract(args.value, 'day')
+    const reports = await Report.find({
+        createdAt: {
+            $gte: today.toDate(),
+            $lte: moment(today).endOf('day').toDate()
+        }
+    }).populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
+
+    return reports
+});
+
+
 module.exports = {
     createReport,
     updateReport,
@@ -134,5 +153,6 @@ module.exports = {
     getReportById,
     getAllReports,
     getUserReports,
-    getFilterReports
+    getFilterReports,
+    getAllReportsByDate
 };

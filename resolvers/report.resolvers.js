@@ -12,7 +12,10 @@ module.exports = {
         },
         report_user: (_, args) => {
             return reportController.getUserReports(args)
-        }
+        },
+        report_date: (_, args) => {
+            return reportController.getAllReportsByDate(args)
+        },
     },
     Mutation: {
         report_create: (_, args) => {

@@ -197,7 +197,7 @@ const changeRequestStatus = asyncHandler(async (args) => {
 // @access  Private && Admin
 const getRequestsByDate = asyncHandler(async (args) => {
     const today = moment().startOf('day').subtract(args.value, 'day')
-    const requests = await Request.find({ //query today up to tonight
+    const requests = await Request.find({
         createdAt: {
             $gte: today.toDate(),
             $lte: moment(today).endOf('day').toDate()

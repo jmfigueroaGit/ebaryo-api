@@ -3,6 +3,7 @@ type Query{
     reports_filter(value: ID!): [Report]
     report(id: ID!): Report
     report_user(user_id: ID!): [Report]
+    report_date(value: Int!): [Report]
 }
 
 type Mutation{
