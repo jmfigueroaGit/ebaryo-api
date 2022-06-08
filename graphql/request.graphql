@@ -3,6 +3,7 @@ type Query{
     request(id: ID!): Request
     request_filter(value: String!): [Request]
     request_user(user_id: ID!): [Request]
+    request_date(value: Int!): [Request]
 }
 
 type Mutation{

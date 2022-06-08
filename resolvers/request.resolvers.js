@@ -12,7 +12,10 @@ module.exports = {
         },
         request_user: (_, args) => {
             return requestController.getUserRequests(args)
-        }
+        },
+        request_date: (_, args) => {
+            return requestController.getRequestsByDate(args)
+        },
     },
     Mutation: {
         request_create: (_, args) => {

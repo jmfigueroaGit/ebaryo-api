@@ -5,7 +5,7 @@ const ActivityLog = require('../models/activitylogModel')
 const userNotification = require('../models/userNotificationModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
-
+const moment = require('moment')
 // @desc    Create barangay request
 // @access  Private
 const createRequest = asyncHandler(async (args) => {
@@ -193,6 +193,23 @@ const changeRequestStatus = asyncHandler(async (args) => {
     }
 });
 
+// @desc    Get all barangay request by date
+// @access  Private && Admin
+const getRequestsByDate = asyncHandler(async (args) => {
+    const today = moment().startOf('day').subtract(args.value, 'day')
+    const requests = await Request.find({ //query today up to tonight
+        createdAt: {
+            $gte: today.toDate(),
+            $lte: moment(today).endOf('day').toDate()
+        }
+    }).populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
+
+    return requests
+});
+
 
 module.exports = {
     createRequest,
@@ -202,5 +219,6 @@ module.exports = {
     getAllRequests,
     getUserRequests,
     getFilterRequests,
-    changeRequestStatus
+    changeRequestStatus,
+    getRequestsByDate
 };
