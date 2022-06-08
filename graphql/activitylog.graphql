@@ -16,4 +16,5 @@ type Activity{
     description: String
     date: Date
     activityId: ID
+    createdAt: Date
 }

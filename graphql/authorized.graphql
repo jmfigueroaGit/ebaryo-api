@@ -27,6 +27,7 @@ type Personnel {
     position: String
     role: String
     isActive: Boolean
+    createdAt: Date
 }
 
 type Personel_Name{

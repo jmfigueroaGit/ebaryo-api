@@ -61,6 +61,7 @@ type Resident {
     address: Address
     user: User
     residentId: String
+    createdAt: Date
 }
 
 type Name {

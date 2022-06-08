@@ -32,6 +32,7 @@ type User {
     isVerified: Boolean
     hasNewNotif: Boolean
     image: UserImage
+    createdAt: Date
 }
 
 type UserImage {

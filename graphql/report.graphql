@@ -19,4 +19,5 @@ type Report {
     user: User
     transactionId: String
     status: String
+    createdAt: Date
 }

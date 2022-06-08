@@ -17,4 +17,5 @@ type Blotter {
     defendant: String
     bltrId: String
     status: String
+    createdAt: Date
 }
