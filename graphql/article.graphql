@@ -20,4 +20,5 @@ type Article {
     body: String!
     publish: Boolean!
     createdAt: Date
+    artclId: String
 }
