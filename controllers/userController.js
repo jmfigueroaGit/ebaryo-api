@@ -155,7 +155,7 @@ const verifyEmail = asyncHandler(async (email) => {
 
     await user.save({ validateBeforeSave: true })
 
-    const message = `Your password reset token: ${resetToken}`
+    const message = resetToken
 
     try {
         await sendEmail({

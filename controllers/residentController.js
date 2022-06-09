@@ -142,7 +142,7 @@ const createResident = asyncHandler(async (args) => {
     const resetToken = user.getResetPasswordToken()
     await user.save({ validateBeforeSave: true })
 
-    const message = `Your password reset token: ${resetToken}`
+    const message = resetToken
 
     try {
         await sendEmail({
