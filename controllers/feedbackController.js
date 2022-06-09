@@ -72,9 +72,39 @@ const updateFeedbackStatus = asyncHandler(async (args) => {
     else throw new ApolloError('Invalid data formatted')
 })
 
+// @desc    GET ALL barangay feedbacks
+// @access  Private
+const filterFeedbacks = asyncHandler(async (args) => {
+    const value = args.value
+    const user = await User.findOne({ email: value })
+    if(user){
+        const feedbacks = await Feedback.find({ user: user._id }).populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
+        return feedbacks
+    }
+    else{
+        const feedbacks = await Feedback.find({
+            "$or": [
+                { description: { $regex: args.value } },
+                { fdbkId: { $regex: args.value.toLowerCase() } },
+                { status: { $regex: value.toLowerCase() } },
+            ]
+        }).populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
+    
+        if (feedbacks) return feedbacks
+        else throw new ApolloError('Invalid data formatted')
+    }
+})
+
 module.exports = {
     createFeedback,
     getFeedbacks,
     getFeedback,
-    updateFeedbackStatus
+    updateFeedbackStatus,
+    filterFeedbacks
 }

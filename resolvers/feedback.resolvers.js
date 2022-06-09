@@ -7,7 +7,10 @@ module.exports = {
         },
         feedback: (_, args) => {
             return feedbackController.getFeedback(args)
-        }
+        },
+        feedbacks_filter: (_, args) => {
+            return feedbackController.filterFeedbacks(args)
+        },
     },
     Mutation: {
         feedback_create: (_, args) => {

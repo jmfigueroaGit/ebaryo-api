@@ -153,7 +153,6 @@ const createResident = asyncHandler(async (args) => {
     } catch (error) {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
-
         await user.save({ validateBeforeSave: false });
         throw new ApolloError(error.message);
     }
@@ -208,6 +207,36 @@ const updateResident = asyncHandler(async (args) => {
         resident.address.province = args.province || resident.address.province
         resident.address.city = args.city || resident.address.city
         resident.address.zipcode = args.zipcode || resident.address.zipcode
+
+        // Upload image to cloudinary
+        const { createReadStream } = await args.photo
+        console.log(createReadStream);
+        // const stream = createReadStream()
+        // let imageUpload = null
+        // const cloudinaryUpload = async ({ stream }) => {
+        //     try {
+        //         await new Promise((resolve, reject) => {
+        //             const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/users" },function (error, result) {
+        //                 if (result) {
+        //                     imageUpload = {
+        //                         public_id: result.public_id,
+        //                         url: result.secure_url
+        //                     }
+        //                     resolve({ imageUpload })
+        //                 } else {
+        //                     reject(error);
+        //                 }
+        //             });
+        //             stream.pipe(streamLoad);
+        //         });
+        //     }
+        //     catch (err) {
+        //         throw new ApolloError(`Failed to upload profile picture ! Err:${err.message}`);
+        //     }
+        // };
+        // await cloudinaryUpload({ stream });
+
+
 
         const updateResident = await resident.save()
 

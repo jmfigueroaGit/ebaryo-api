@@ -100,19 +100,28 @@ const getAllReports = asyncHandler(async () => {
 
 const getFilterReports = asyncHandler(async (args) => {
     const value = args.value.toLowerCase()
-    const reports = await Report.find({
-        "$or": [
-            { report: { $regex: args.value } },
-            { description: { $regex: args.value } },
-            { status: { $regex: value } },
-            { transactionId: { $regex: value } },
-            { 'user.email': { $regex: value } }
-        ]
-    }).populate({
-        path: 'user',
-        select: '_id email isVerified hasNewNotif image'
-    })
-    return reports
+    const user = await User.findOne({ email: value })
+    if(user){
+        const reports = await Report.find({ user: user._id }).populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
+        return reports
+    }
+    else{
+        const reports = await Report.find({
+            "$or": [
+                { report: { $regex: args.value } },
+                { description: { $regex: args.value } },
+                { status: { $regex: value } },
+                { transactionId: { $regex: value } },
+            ]
+        }).populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
+        return reports
+    }
 });
 
 // @desc    Get all barangay reports of current logged in user

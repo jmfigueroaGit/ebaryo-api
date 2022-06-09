@@ -112,20 +112,30 @@ const getAllRequests = asyncHandler(async () => {
 // @desc    Get all barangay request
 // @access  Private && Admin
 const getFilterRequests = asyncHandler(async (args) => {
-    const value = args.value.toLowerCase()
-    const requests = await Request.find({
-        "$or": [
-            { request: { $regex: value } },
-            { purpose: { $regex: value } },
-            { status: { $regex: value } },
-            { transactionId: { $regex: value } }
-        ]
-    }).populate({
-        path: 'user',
-        select: '_id email isVerified hasNewNotif image'
-    })
-
-    return requests
+    const value = args.value
+    const user = await User.findOne({ email: value })
+    if(user){
+        const requests = Request.find({ user: user._id })
+        return requests.populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
+    }
+    else{
+        const requests = await Request.find({
+            "$or": [
+                { request: { $regex: value } },
+                { purpose: { $regex: value } },
+                { status: { $regex: value.toLowerCase() } },
+                { transactionId: { $regex: value.toLowerCase() } }
+            ]
+        }).populate({
+            path: 'user',
+            select: '_id email isVerified hasNewNotif image'
+        })
+    
+        return requests
+    }
 });
 
 // @desc    Get all barangay request of current logged in user
