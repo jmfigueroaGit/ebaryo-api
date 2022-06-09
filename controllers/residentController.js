@@ -199,8 +199,8 @@ const updateResident = asyncHandler(async (args) => {
         resident.address.zipcode = args.zipcode || resident.address.zipcode
 
         // Upload image to cloudinary
-        const { createReadStream } = await args.photo
-        console.log(createReadStream);
+        // const { createReadStream } = await args.photo
+        // console.log(createReadStream);
         // const stream = createReadStream()
         // let imageUpload = null
         // const cloudinaryUpload = async ({ stream }) => {
