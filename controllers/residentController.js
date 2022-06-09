@@ -31,25 +31,15 @@ const getFilterResidents = asyncHandler(async (args) => {
     const value = args.value.toLowerCase()
     const residents = await Resident.find({
         "$or": [
-            { 'name.first': { $regex: value } },
-            { 'name.middle': { $regex: value } },
-            { 'name.last': { $regex: value } },
-            { 'name.extension': { $regex: value } },
-            { 'sex': { $regex: value } },
-            { 'residentId': { $regex: value } },
-            { 'nationality': { $regex: value } },
-            { 'mobileNumber': { $regex: value } },
-            { 'email': { $regex: value } },
-            { 'address.houseNumber': { $regex: value } },
-            { 'address.street': { $regex: value } },
-            { 'address.barangay': { $regex: value } },
-            { 'address.province': { $regex: value } },
-            { 'address.city': { $regex: value } },
-            { 'address.zipcode': { $regex: value } },
+            { sex: { $regex: value } },
+            { residentId: { $regex: value } },
+            { nationality: { $regex: value } },
+            { mobileNumber: { $regex: value } },
+            { email: { $regex: value } },
         ]
     }).populate({
         path: 'user',
-        select: '_id email isVerified'
+        select: '_id email isVerified hasNewNotif image'
     })
     return residents
 });
