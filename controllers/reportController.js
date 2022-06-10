@@ -154,6 +154,24 @@ const getAllReportsByDate = asyncHandler(async (args) => {
     return reports
 });
 
+// @desc    Update feedback status
+// @access  Private
+const updateReportStatus = asyncHandler(async (args) => {
+    const { report_id, status } = args
+    const report = await Report.findById(report_id).populate({
+        path: 'user',
+        select: '_id email isVerified hasNewNotif image'
+    })
+
+    if (!report) throw new ApolloError('Report not found')
+
+    report.status = status || report.status
+    report.save()
+
+    if (report) return report
+    else throw new ApolloError('Invalid data formatted')
+})
+
 
 module.exports = {
     createReport,
@@ -163,5 +181,6 @@ module.exports = {
     getAllReports,
     getUserReports,
     getFilterReports,
-    getAllReportsByDate
+    getAllReportsByDate,
+    updateReportStatus
 };

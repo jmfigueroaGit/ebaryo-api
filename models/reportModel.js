@@ -19,7 +19,7 @@ const reportSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			default: 'unread',
-			enum: ["unread", "viewed", "in progress", "actioned", "achived"]
+			enum: ["unread", "viewed", "in progress", "actioned", "archived"]
 		},
 		transactionId: {
 			type: String,

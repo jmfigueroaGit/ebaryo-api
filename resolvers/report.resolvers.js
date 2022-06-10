@@ -26,6 +26,9 @@ module.exports = {
         },
         report_delete: (_, args) => {
             return reportController.deleteReport(args)
+        },
+        report_status: (_, args) => {
+            return reportController.updateReportStatus(args)
         }
     }
 }

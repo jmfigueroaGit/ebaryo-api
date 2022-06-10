@@ -160,10 +160,16 @@ const changeRequestStatus = asyncHandler(async (args) => {
 
     let data = null
 
-    if (status === 'ready')
+    if (status === 'for release')
         data = {
             type: "request",
             description: `Your ${request.request} is ready to claim.`,
+            notifId: request_id
+        }
+    else if (status === 'on process')
+        data = {
+            type: "request",
+            description: `Your ${request.request} is on process.`,
             notifId: request_id
         }
     else if (status === 'claimed')
