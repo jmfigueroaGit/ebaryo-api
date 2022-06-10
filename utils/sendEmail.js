@@ -29,7 +29,6 @@ const sendEmail = (options) => {
         if (error) {
             return console.log(error);
         }
-        console.log("Message sent: %s", info.response);
     });
 
     // await transporter.sendMail(message, function(error, info){

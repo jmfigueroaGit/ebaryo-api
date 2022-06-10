@@ -2,6 +2,7 @@ const Request = require('../models/requestModel');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const ActivityLog = require('../models/activitylogModel')
+const Resident = require('../models/residentModel')
 const userNotification = require('../models/userNotificationModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
@@ -84,14 +85,11 @@ const deleteRequest = asyncHandler(async (args) => {
 const getRequestById = asyncHandler(async (args) => {
     const request = await Request.findById(args.id).populate({
         path: 'user',
-        select: '_id email  isVerified'
+        select: '_id email isVerified hasNewNotif image createdAt'
     });
 
     if (request) {
-        return request.populate({
-            path: 'user',
-            select: '_id email isVerified hasNewNotif image'
-        })
+        return request
 
     } else {
         throw new ApolloError('Request not found');
@@ -192,7 +190,8 @@ const changeRequestStatus = asyncHandler(async (args) => {
         // Check if user's notification existed
         const notification = await userNotification.findOne({ user: user })
         if (!notification) throw new ApolloError('Notication not found')
-
+        user.hasNewNotif = true;
+        user.save()
         request.status = status
         const updated_request = await request.save()
 
