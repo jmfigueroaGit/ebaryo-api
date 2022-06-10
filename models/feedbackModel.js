@@ -18,7 +18,7 @@ const feedbackModel = new mongoose.Schema(
         status: {
             type: String,
             default: 'unread',
-            enum: ['unread', 'prioritized', 'read', 'actioned', 'archived']
+            enum: ['unread', 'prioritized', 'viewed', 'actioned', 'archived']
         }
     },
     {

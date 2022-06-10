@@ -1,6 +1,7 @@
 type Query {
     blotters: [Blotter]
     blotter(blotter_id: ID!): Blotter
+    blotters_filter(value: String!): [Blotter]
 }
 
 type Mutation {

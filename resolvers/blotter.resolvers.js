@@ -7,7 +7,10 @@ module.exports = {
         },
         blotter: (_, args) => {
             return blotterController.getBlotter(args)
-        }
+        },
+        blotters_filter: (_, args) => {
+            return blotterController.getFilterBlotter(args)
+        },
     },
     Mutation: {
         blotter_create: (_, args) => {

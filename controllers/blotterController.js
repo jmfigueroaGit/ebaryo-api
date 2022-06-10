@@ -68,10 +68,27 @@ const statusBlotter = asyncHandler(async (args) => {
     else throw new ApolloError("Invalid data input")
 })
 
+const getFilterBlotter = asyncHandler(async (args) => {
+    const value = args.value
+    const blotters = await Blotter.find({
+        "$or": [
+            { bltrId: { $regex: args.value.toLowerCase() } },
+            { caseType: { $regex: args.value } },
+            { status: { $regex: value.toLowerCase() } },
+            { complainant: { $regex: value } },
+            { defendant: { $regex: value } },
+            { description: { $regex: value } },
+        ]
+    })
+
+    return blotters
+});
+
 module.exports = {
     createBlotter,
     updateBlotter,
     getBlotter,
     getBlotters,
-    statusBlotter
+    statusBlotter,
+    getFilterBlotter
 }

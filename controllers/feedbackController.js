@@ -96,8 +96,7 @@ const filterFeedbacks = asyncHandler(async (args) => {
             select: '_id email isVerified hasNewNotif image'
         })
     
-        if (feedbacks) return feedbacks
-        else throw new ApolloError('Invalid data formatted')
+        return feedbacks
     }
 })
 

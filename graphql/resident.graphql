@@ -44,8 +44,8 @@ type Mutation{
         province: String,
         city: String,
         zipcode: String,
-        imageUrl: String!,
-        publicId: String!
+        imageUrl: String,
+        publicId: String
     ): Resident
     resident_delete(id: ID!): Message
 }

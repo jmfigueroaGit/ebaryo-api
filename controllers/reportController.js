@@ -99,7 +99,7 @@ const getAllReports = asyncHandler(async () => {
 });
 
 const getFilterReports = asyncHandler(async (args) => {
-    const value = args.value.toLowerCase()
+    const value = args.value
     const user = await User.findOne({ email: value })
     if(user){
         const reports = await Report.find({ user: user._id }).populate({
@@ -111,10 +111,10 @@ const getFilterReports = asyncHandler(async (args) => {
     else{
         const reports = await Report.find({
             "$or": [
-                { report: { $regex: args.value } },
+                { report: { $regex: args.value.toUpperCase() } },
                 { description: { $regex: args.value } },
-                { status: { $regex: value } },
-                { transactionId: { $regex: value } },
+                { status: { $regex: value.toLowerCase() } },
+                { transactionId: { $regex: value.toLowerCase() } },
             ]
         }).populate({
             path: 'user',
