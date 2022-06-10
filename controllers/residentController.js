@@ -71,8 +71,7 @@ const getResidentById = asyncHandler(async (user_id) => {
 const createResident = asyncHandler(async (args) => {
 
     // Mapping values from argument
-    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode, photo } = args;
-    const { createReadStream } = await photo
+    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode, imageUrl, publicId } = args;
 
     // Find phone number in the Resident's database
     const phoneExists = await Resident.findOne({ mobileNumber });
@@ -90,37 +89,15 @@ const createResident = asyncHandler(async (args) => {
         throw new ApolloError('Email address is already used');
     }
 
-    // Upload image to cloudinary
-    const stream = createReadStream()
-    let imageUpload = null
-    const cloudinaryUpload = async ({ stream }) => {
-        try {
-            await new Promise((resolve, reject) => {
-                const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/users" },function (error, result) {
-                    if (result) {
-                        imageUpload = {
-                            public_id: result.public_id,
-                            url: result.secure_url
-                        }
-                        resolve({ imageUpload })
-                    } else {
-                        reject(error);
-                    }
-                });
-                stream.pipe(streamLoad);
-            });
-        }
-        catch (err) {
-            throw new ApolloError(`Failed to upload profile picture ! Err:${err.message}`);
-        }
-    };
-    await cloudinaryUpload({ stream });
 
     // Create user account using email and auto-generated password
     const user = await User.create({
         email,
         password: generateToken(email),
-        image: imageUpload
+        image: {
+            public_id: publicId,
+            url:imageUrl
+        }
     })
 
     // Check if user account is created
