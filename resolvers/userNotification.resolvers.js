@@ -2,6 +2,7 @@ const surveyController = require('../controllers/surveyController')
 const articleController = require('../controllers/articleController')
 const requestController = require('../controllers/requestController')
 const userNotificationController = require('../controllers/userNotificationController')
+const announcementController = require('../controllers/announcementController')
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
@@ -23,6 +24,12 @@ module.exports = {
             if (args.status === true)
                 pubsub.publish("steam_notification", { notification: "New notification added" })
             return article
+        },
+        publish_announcement: (_, args) => {
+            const announcement = announcementController.publishAnnouncement(args)
+            if (args.status === true)
+                pubsub.publish("steam_notification", { notification: "New notification added" })
+            return announcement 
         },
         request_status: (_, args) => {
             const request = requestController.changeRequestStatus(args)

@@ -7,20 +7,13 @@ const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const generateToken = require('../utils/generateToken')
 const sendEmail = require('../utils/sendEmail')
-const cloudinary = require('cloudinary')
-
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET,
-});
 
 // @desc    Get All Residents
 // @access  Private || Admin
 const getAllResidents = asyncHandler(async () => {
     const residents = await Resident.find().populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
     return residents
 });
@@ -31,6 +24,8 @@ const getFilterResidents = asyncHandler(async (args) => {
     const value = args.value.toLowerCase()
     const residents = await Resident.find({
         "$or": [
+            { 'name.first': { $regex: value } },
+            { 'name.last': { $regex: value } },
             { sex: { $regex: value } },
             { residentId: { $regex: value } },
             { nationality: { $regex: value } },
@@ -41,6 +36,7 @@ const getFilterResidents = asyncHandler(async (args) => {
         path: 'user',
         select: '_id email isVerified hasNewNotif image'
     })
+    console.log(residents);
     return residents
 });
 
@@ -49,7 +45,7 @@ const getFilterResidents = asyncHandler(async (args) => {
 const getResident = asyncHandler(async (id) => {
     const resident = await Resident.findById(id).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
     if (resident) return resident
     else throw new ApolloError('Resident not existed with this ID');
@@ -60,7 +56,7 @@ const getResident = asyncHandler(async (id) => {
 const getResidentById = asyncHandler(async (user_id) => {
     const resident = await Resident.findOne({ user: user_id }).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
     if (resident) return resident
     else throw new ApolloError(`Resident not existed with this User's ID`);
@@ -89,9 +85,9 @@ const createResident = asyncHandler(async (args) => {
         throw new ApolloError('Email address is already used');
     }
 
-
     // Create user account using email and auto-generated password
     const user = await User.create({
+        name: first + " " + middle + " " + last,
         email,
         password: generateToken(email),
         image: {
@@ -99,11 +95,6 @@ const createResident = asyncHandler(async (args) => {
             url:imageUrl
         }
     })
-
-    // Check if user account is created
-    if (!user) {
-        throw new ApolloError('User not existed');
-    }
 
     // Generate reset token
     const resetToken = user.getResetPasswordToken()
@@ -146,7 +137,7 @@ const createResident = asyncHandler(async (args) => {
         await ActivityLog.create({ user: user._id })
         return resident.populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         });
     } else {
         throw new ApolloError('Invalid user data');
@@ -176,6 +167,8 @@ const updateResident = asyncHandler(async (args) => {
         resident.address.city = args.city || resident.address.city
         resident.address.zipcode = args.zipcode || resident.address.zipcode
         if(user){
+            user.name = args.first + " " + args.middle + " " + args.last || user.name
+            user.email = args.email || user.email
             user.image.url = args.imageUrl || user.image.url
             user.image.public_id = args.publicId || user.image.public_id
             await user.save()
@@ -183,7 +176,10 @@ const updateResident = asyncHandler(async (args) => {
 
         const updateResident = await resident.save()
 
-        return updateResident
+        return updateResident.populate({
+            path: 'user',
+            select: '_id name email isVerified hasNewNotif image'
+        })
     } else {
         throw new ApolloError('Resident not existed with this ID');
     }
@@ -202,9 +198,6 @@ const deleteResident = asyncHandler(async (args) => {
         throw new ApolloError('Resident not found');
     }
 });
-
-
-
 
 module.exports = {
     getAllResidents,

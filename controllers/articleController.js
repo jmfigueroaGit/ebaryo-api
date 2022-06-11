@@ -16,7 +16,7 @@ cloudinary.config({
 // @desc    Create barangay article
 // @access  Private || Admin
 const createArticle = asyncHandler(async (args) => {
-    const { authorized_id, image, title, body, publish } = args;
+    const { authorized_id, imageUrl, publicId, title, body, publish } = args;
 
     const personnel = Authorized.findById(authorized_id)
 
@@ -24,51 +24,49 @@ const createArticle = asyncHandler(async (args) => {
         throw new ApolloError('User not found')
     }
 
-    let imageUpload = null
-    const { createReadStream } = await image
-    const stream = createReadStream()
-
-    const cloudinaryUpload = async ({ stream }) => {
-        try {
-            await new Promise((resolve, reject) => {
-                const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/article" }, function (error, result) {
-                    if (result) {
-                        imageUpload = {
-                            public_id: result.public_id,
-                            url: result.secure_url
-                        }
-                        resolve({ imageUpload })
-                    } else {
-                        reject(error);
-                    }
-                });
-                stream.pipe(streamLoad);
-            });
-        }
-        catch (err) {
-            throw new Error(`Failed to upload article photo. Error :${err.message}`);
-        }
-    };
-
-    await cloudinaryUpload({ stream });
-
     const articleLength = await Article.find()
     const running = leadingzero(articleLength.length + 1, 4)
     const artclId = 'artcl-22-' + running;
 
     const article = await Article.create({
         authorized: authorized_id,
-        image: imageUpload,
+        image: {
+            public_id: publicId,
+            url: imageUrl
+        },
         title,
         body,
         publish,
         artclId
     });
 
-    if (article) return article.populate({
-        path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
-    })
+    if (article){
+        if (article.publish === true) {
+            const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
+    
+            const data = {
+                type: "article",
+                description: `${article.title} is now available. Check it.`,
+                notifId: article._id
+            }
+    
+            const notification = await userNotification.find()
+            for (let i = 0; i < notification.length; i++) {
+                notification[i].notifications.push(data)
+                notification[i].save()
+            }
+    
+            if (user && notification) return article.populate({
+                path: 'authorized',
+                select: '_id name email phoneNumber sex position role isActive'
+            })
+            else throw new ApolloError('Error encountered');
+        } 
+        else return article.populate({
+            path: 'authorized',
+            select: '_id name email phoneNumber sex position role isActive'
+        })
+    }
     else throw new ApolloError('Invalid data format');
 });
 
@@ -77,8 +75,11 @@ const createArticle = asyncHandler(async (args) => {
 const updateArticle = asyncHandler(async (args) => {
     const article = await Article.findById(args.article_id)
 
+    if (article.publish === true) throw new ApolloError('Article cannot be updated once it is published')
+
     if (article) {
-        article.image = args.image || article.image
+        article.image.public_id = args.publicId || article.image.public_id
+        article.image.url = args.imageUrl || article.image.url
         article.title = args.title || article.title
         article.body = args.body || article.body
         article.publish = args.publish || article.publish
@@ -168,10 +169,16 @@ const publishArticle = asyncHandler(async (args) => {
             notification[i].save()
         }
 
-        if (user && notification) return article
+        if (user && notification) return article.populate({
+            path: 'authorized',
+            select: '_id name email phoneNumber sex position role isActive'
+        })
         else throw new ApolloError('Error encountered');
-    } return article
-
+    } 
+    else return article.populate({
+        path: 'authorized',
+        select: '_id name email phoneNumber sex position role isActive'
+    })
 });
 
 

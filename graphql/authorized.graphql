@@ -6,8 +6,27 @@ type Query{
 type Mutation{
     personnel_auth(token: String!): Personnel
     personnel_login(email: String!, password: String!): Personnel_AuthPayload
-    personnel_signup(name: Personnel_Name, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel
-    personnel_update(id: ID!, name: String, email: String, phoneNumber: String, sex: String, position: String, role: String, password: String): Personnel
+    personnel_signup(
+        name: Personnel_Name!, 
+        email: String!, 
+        phoneNumber: String!, 
+        sex: String!, 
+        imageUrl: String!,
+        publicId: String!, 
+        position: String!, 
+        role: String!, 
+        password: String!): Personnel
+    personnel_update(
+        id: ID!, 
+        name: Personnel_Name, 
+        email: String, 
+        phoneNumber: String, 
+        sex: String, 
+        position: String, 
+        role: String, 
+        imageUrl: String,
+        publicId: String,
+        password: String): Personnel
     personnel_delete(id: ID!): Message
     personnel_verify_email(email: String!): Reset
     personnel_reset_password(token: String!, password: String!, confirmPassword: String!): Reset
@@ -22,6 +41,7 @@ type Personnel {
     _id: ID
     name: Personel_Name
     email: String
+    image: Image
     phoneNumber: String
     sex: String
     position: String
@@ -32,7 +52,9 @@ type Personnel {
 
 type Personel_Name{
     first: String
+    middle: String
     last: String
+    extension: String
 }
 
 type Message{
@@ -46,5 +68,7 @@ type Reset{
 
 input Personnel_Name{
     first: String!
-    last: String
+    middle: String!
+    last: String!
+    extension: String
 }

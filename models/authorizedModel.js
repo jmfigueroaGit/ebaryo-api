@@ -6,7 +6,9 @@ const authorizedSchema = new mongoose.Schema(
     {
         name: {
             first: { type: String, required: true },
+            middle: { type: String, required: true },
             last: { type: String, required: true },
+            extension: { type: String },
         },
         email: {
             type: String,
@@ -36,6 +38,16 @@ const authorizedSchema = new mongoose.Schema(
             required: [true, 'This field is required'],
             select: false,
         },
+        image: {
+			public_id: {
+				type: String,
+				//required: true
+			},
+			url: {
+				type: String,
+				//required: true
+			},
+		},
         isActive: {
             type: Boolean,
             default: true

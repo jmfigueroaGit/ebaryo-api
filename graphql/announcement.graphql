@@ -1,5 +1,3 @@
-scalar Upload
-
 type Query{
     announcements: [Announcement]
     announcement(id: ID!): Announcement
@@ -7,8 +5,24 @@ type Query{
 }
 
 type Mutation{
-    announcement_create(user_id: ID!, image: Upload!, subject: String!, description: String!, postedUntil: Date!, publish: Boolean): Announcement
-    announcement_update(announce_id: ID!, image: Upload, subject: String!, description: String, postedUntil: Date, viewCounts: Int, publish: Boolean): Announcement
+    announcement_create(
+        user_id: ID!, 
+        imageUrl: String!,
+        publicId: String!
+        subject: String!, 
+        description: String!, 
+        postedUntil: Date!, 
+        publish: Boolean): Announcement
+
+    announcement_update(
+        announce_id: ID!, 
+        imageUrl: String,
+        publicId: String,
+        subject: String, 
+        description: String, 
+        postedUntil: Date, 
+        viewCounts: Int, 
+        publish: Boolean): Announcement
     announcement_delete(announce_id: ID!): Message  
 }
 

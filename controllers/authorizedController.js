@@ -39,12 +39,24 @@ const authPersonnel = asyncHandler(async (args) => {
 // @desc    signup user
 // @access  Public 
 const createPersonnel = asyncHandler(async (args) => {
-    const { name, email, password, phoneNumber, sex, position, role } = args
+    const { name, email, password, phoneNumber, sex, position, role, imageUrl, publicId } = args
     const emailExist = await Authorized.findOne({ email })
 
     if (emailExist) throw new ApolloError("Email is already used")
 
-    const personnel = await Authorized.create({ name, email, password, phoneNumber, sex, position, role })
+    const personnel = await Authorized.create({ 
+        name, 
+        email, 
+        password, 
+        phoneNumber, 
+        sex, 
+        position, 
+        role, 
+        image: {
+            public_id: publicId,
+            url: imageUrl
+        }
+    })
 
     if (personnel) return personnel
     else throw new ApolloError("Invalid user data")
@@ -55,6 +67,8 @@ const createPersonnel = asyncHandler(async (args) => {
 const updatePersonnel = asyncHandler(async (args) => {
     const personnel = await Authorized.findById(args.id)
     if (personnel) {
+        personnel.image.url = args.imageUrl || personnel.image.url
+        personnel.image.public_id = args.publicId || personnel.image.public_id
         personnel.name = args.name || personnel.name
         personnel.email = args.email || personnel.email
         personnel.phoneNumber = args.phoneNumber || personnel.phoneNumber

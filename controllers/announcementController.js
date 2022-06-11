@@ -1,4 +1,6 @@
 const Announcement = require('../models/announcementModel');
+const User = require('../models/userModel')
+const userNotification = require('../models/userNotificationModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const Authorized = require('../models/authorizedModel')
@@ -14,44 +16,21 @@ cloudinary.config({
 // @desc    Create barangay announcement
 // @access  Private || Admin
 const createAnnouncement = asyncHandler(async (args) => {
-    const { subject, description, user_id, image, postedUntil, publish } = args;
+    const { subject, description, user_id, imageUrl, publicId, postedUntil, publish } = args;
 
     const user = Authorized.findById(user_id)
     if (!user) throw new ApolloError('User not found')
 
-    let imageUpload = null
-    const { createReadStream } = await image
-    const stream = createReadStream()
-
-    const cloudinaryUpload = async ({ stream }) => {
-        try {
-            await new Promise((resolve, reject) => {
-                const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/announcement" }, function (error, result) {
-                    if (result) {
-                        imageUpload = {
-                            public_id: result.public_id,
-                            url: result.secure_url
-                        }
-                        resolve({ imageUpload })
-                    } else {
-                        reject(error);
-                    }
-                });
-                stream.pipe(streamLoad);
-            });
-        }
-        catch (err) {
-            throw new Error(`Failed to upload annoucement photo. Error :${err.message}`);
-        }
-    };
-    await cloudinaryUpload({ stream });
     const annouceLength = await Announcement.find()
     const running = leadingzero(annouceLength.length + 1, 4)
     const ancmtId = 'ancmt-22-' + running;
     const announcement = await Announcement.create({
         subject,
         authorized: user_id,
-        image: imageUpload,
+        image: {
+            public_id: publicId,
+            url: imageUrl
+        },
         description,
         postedUntil,
         publish,
@@ -59,10 +38,31 @@ const createAnnouncement = asyncHandler(async (args) => {
     });
 
     if (announcement){ 
-        
-        return announcement.populate({
-            path: 'authorized',
-            select: '_id name email phoneNumber sex position role isActive'})
+        if(announcement.publish === true){
+            const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
+
+            const data = {
+                type: "announcement",
+                description: `${announcement.subject} is now available. Check it.`,
+                notifId: announcement._id
+            }
+
+            const notification = await userNotification.find();
+
+            for (let i = 0; i < notification.length; i++) {
+                notification[i].notifications.push(data)
+                notification[i].save()
+            }
+    
+            if (user && notification){
+                return announcement.populate({
+                    path: 'authorized',
+                    select: '_id name email phoneNumber sex position role isActive createdAt'})
+            }
+            else throw new ApolloError('Error encountered');
+        }
+        else return announcement
+
     }
     else throw new ApolloError('Invalid data format');
 });
@@ -76,7 +76,8 @@ const updateAnnouncement = asyncHandler(async (args) => {
 
     if (announcement) {
         announcement.description = args.description || announcement.description
-        announcement.image = args.image || announcement.image
+        announcement.image.public_id = args.publicId || announcement.image.public_id
+        announcement.image.url = args.imageUrl || announcement.image.url
         announcement.postedUntil = args.postedUntil || announcement.postedUntil
         announcement.publish = args.publish || announcement.publish
 
@@ -146,11 +147,51 @@ const filterAnnouncement = asyncHandler(async (args) => {
 
 })
 
+// @desc    Update barangay announcement
+// @access  Private || Admin
+const publishAnnouncement = asyncHandler(async (args) => {
+    const { announcementId, status } = args
+
+    const announcement = await Announcement.findById(announcementId)
+
+    announcement.publish = status
+    announcement.save()
+
+    if(announcement.publish === true){
+        const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
+
+        const data = {
+            type: "announcement",
+            description: `${announcement.subject} is now available. Check it.`,
+            notifId: announcement._id
+        }
+
+        const notification = await userNotification.find();
+
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(data)
+            notification[i].save()
+        }
+
+        if (user && notification){
+            return announcement.populate({
+                path: 'authorized',
+                select: '_id name email phoneNumber sex position role isActive'})
+        }
+        else throw new ApolloError('Error encountered');
+    }
+    else return announcement.populate({
+        path: 'authorized',
+        select: '_id name email phoneNumber sex position role isActive'
+    })
+})
+
 module.exports = {
     createAnnouncement,
     updateAnnouncement,
     deleteAnnouncement,
     getAnnouncement,
     getAllAnnouncements,
-    filterAnnouncement
+    filterAnnouncement,
+    publishAnnouncement
 };

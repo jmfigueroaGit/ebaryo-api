@@ -28,6 +28,7 @@ type AuthPayload{
 
 type User {
     _id: ID
+    name: String
     email: String
     isVerified: Boolean
     hasNewNotif: Boolean

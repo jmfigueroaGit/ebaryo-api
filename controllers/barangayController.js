@@ -43,36 +43,8 @@ const setupBarangayOfficial = asyncHandler(async (args) => {
 // @desc    Setup barangay images and map
 // @access  Private
 const setupBarangayImages = asyncHandler(async (args) => {
-    const { barangay_id, image } = args;
+    const { barangay_id, images } = args;
 
-    let images = []
-    for (let i = 0; i < image.length; i++) {
-        const { createReadStream } = await image[i]
-        const stream = createReadStream()
-        const cloudinaryUpload = async ({ stream }) => {
-            try {
-                await new Promise((resolve, reject) => {
-                    const streamLoad = cloudinary.v2.uploader.upload_stream({ folder: "ebaryo/barangay" }, function (error, result) {
-                        if (result) {
-                            let data = {
-                                public_id: result.public_id,
-                                url: result.secure_url
-                            }
-                            images.push(data)
-                            resolve({ data })
-                        } else {
-                            reject(error);
-                        }
-                    });
-                    stream.pipe(streamLoad);
-                });
-            }
-            catch (err) {
-                throw new Error(`Failed to upload profile picture ! Err:${err.message}`);
-            }
-        };
-        await cloudinaryUpload({ stream });
-    }
     const barangay = await Barangay.findById(barangay_id)
 
     if (!barangay) throw new ApolloError('Barangay not found')
