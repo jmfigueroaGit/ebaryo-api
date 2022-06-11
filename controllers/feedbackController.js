@@ -25,7 +25,7 @@ const createFeedback = asyncHandler(async (args) => {
 
     if (feedback) return feedback.populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
     else throw new ApolloError('Invalid data formatted')
 })
@@ -36,7 +36,7 @@ const createFeedback = asyncHandler(async (args) => {
 const getFeedbacks = asyncHandler(async () => {
     const feedbacks = await Feedback.find().populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
 
     if (feedbacks) return feedbacks
@@ -47,7 +47,7 @@ const getFeedbacks = asyncHandler(async () => {
 const getFeedback = asyncHandler(async (args) => {
     const feedback = await Feedback.findById(args.feedback_id).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
 
     if (feedback) return feedback
@@ -60,7 +60,7 @@ const updateFeedbackStatus = asyncHandler(async (args) => {
     const { feedback_id, status } = args
     const feedback = await Feedback.findById(feedback_id).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
 
     if (!feedback) throw new ApolloError('Feedback not found')
@@ -80,7 +80,7 @@ const filterFeedbacks = asyncHandler(async (args) => {
     if(user){
         const feedbacks = await Feedback.find({ user: user._id }).populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         })
         return feedbacks
     }
@@ -93,7 +93,7 @@ const filterFeedbacks = asyncHandler(async (args) => {
             ]
         }).populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         })
     
         return feedbacks

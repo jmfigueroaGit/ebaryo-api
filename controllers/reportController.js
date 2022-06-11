@@ -31,7 +31,7 @@ const createReport = asyncHandler(async (args) => {
     if (barangay_report) {
         return barangay_report.populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         })
     } else {
         throw new ApolloError('Invalid data format');
@@ -51,7 +51,7 @@ const updateReport = asyncHandler(async (args) => {
 
         return updated_report.populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         })
     } else {
         throw new ApolloError('Report not existed with this ID')
@@ -76,7 +76,7 @@ const deleteReport = asyncHandler(async (args) => {
 const getReportById = asyncHandler(async (args) => {
     const report = await Report.findById(args.id).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
 
     if (report) {
@@ -92,7 +92,7 @@ const getReportById = asyncHandler(async (args) => {
 const getAllReports = asyncHandler(async () => {
     const reports = await Report.find().populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id name email isVerified hasNewNotif image'
     })
 
     return reports
@@ -104,7 +104,7 @@ const getFilterReports = asyncHandler(async (args) => {
     if(user){
         const reports = await Report.find({ user: user._id }).populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         })
         return reports
     }
@@ -118,7 +118,7 @@ const getFilterReports = asyncHandler(async (args) => {
             ]
         }).populate({
             path: 'user',
-            select: '_id email isVerified hasNewNotif image'
+            select: '_id name email isVerified hasNewNotif image'
         })
         return reports
     }
@@ -129,7 +129,7 @@ const getFilterReports = asyncHandler(async (args) => {
 const getUserReports = asyncHandler(async (args) => {
     const reports = await Report.find({ user: args.user_id }).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id email name isVerified hasNewNotif image'
     })
 
     if (reports) {
@@ -148,7 +148,7 @@ const getAllReportsByDate = asyncHandler(async (args) => {
         }
     }).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id email name isVerified hasNewNotif image'
     })
 
     return reports
@@ -160,7 +160,7 @@ const updateReportStatus = asyncHandler(async (args) => {
     const { report_id, status } = args
     const report = await Report.findById(report_id).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id email name isVerified hasNewNotif image'
     })
 
     if (!report) throw new ApolloError('Report not found')
