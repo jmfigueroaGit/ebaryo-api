@@ -32,3 +32,8 @@ type Article {
     createdAt: Date
     artclId: String
 }
+
+type Image{
+    public_id: String!,
+    url: String!
+}
