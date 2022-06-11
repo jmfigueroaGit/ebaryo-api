@@ -5,13 +5,6 @@ const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const Authorized = require('../models/authorizedModel')
 const leadingzero = require('leadingzero')
-const cloudinary = require('cloudinary')
-
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET,
-});
 
 // @desc    Create barangay announcement
 // @access  Private || Admin
@@ -57,7 +50,7 @@ const createAnnouncement = asyncHandler(async (args) => {
             if (user && notification){
                 return announcement.populate({
                     path: 'authorized',
-                    select: '_id name email phoneNumber sex position role isActive createdAt'})
+                    select: '_id image name email phoneNumber sex position role isActive createdAt'})
             }
             else throw new ApolloError('Error encountered');
         }
@@ -84,7 +77,7 @@ const updateAnnouncement = asyncHandler(async (args) => {
         const updated_announcement = await announcement.save()
         return updated_announcement.populate({
             path: 'authorized',
-            select: '_id name email phoneNumber sex position role isActive'
+            select: '_id image name email phoneNumber sex position role isActive'
         })
     }
     else throw new Error('Announcement not found');
@@ -109,7 +102,7 @@ const deleteAnnouncement = asyncHandler(async (args) => {
 const getAnnouncement = asyncHandler(async (args) => {
     const announcement = await Announcement.findById(args.id).populate({
         path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
+        select: '_id image name email phoneNumber sex position role isActive'
     })
 
     if (!announcement) throw new ApolloError('Announcement not found');
@@ -122,7 +115,7 @@ const getAnnouncement = asyncHandler(async (args) => {
 const getAllAnnouncements = asyncHandler(async () => {
     const announcements = await Announcement.find().populate({
         path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
+        select: '_id image name email phoneNumber sex position role isActive'
     })
 
     return announcements
@@ -140,7 +133,7 @@ const filterAnnouncement = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
+        select: '_id image name email phoneNumber sex position role isActive'
     })
 
     return announcements
@@ -176,13 +169,13 @@ const publishAnnouncement = asyncHandler(async (args) => {
         if (user && notification){
             return announcement.populate({
                 path: 'authorized',
-                select: '_id name email phoneNumber sex position role isActive'})
+                select: '_id image name email phoneNumber sex position role isActive'})
         }
         else throw new ApolloError('Error encountered');
     }
     else return announcement.populate({
         path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
+        select: '_id image name email phoneNumber sex position role isActive'
     })
 })
 

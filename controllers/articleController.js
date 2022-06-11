@@ -7,12 +7,6 @@ const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const cloudinary = require('cloudinary')
 
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET,
-});
-
 // @desc    Create barangay article
 // @access  Private || Admin
 const createArticle = asyncHandler(async (args) => {
@@ -58,13 +52,13 @@ const createArticle = asyncHandler(async (args) => {
     
             if (user && notification) return article.populate({
                 path: 'authorized',
-                select: '_id name email phoneNumber sex position role isActive'
+                select: '_id image name email phoneNumber sex position role isActive'
             })
             else throw new ApolloError('Error encountered');
         } 
         else return article.populate({
             path: 'authorized',
-            select: '_id name email phoneNumber sex position role isActive'
+            select: '_id image name email phoneNumber sex position role isActive'
         })
     }
     else throw new ApolloError('Invalid data format');
@@ -87,7 +81,7 @@ const updateArticle = asyncHandler(async (args) => {
         const updated_article = await article.save()
         return updated_article.populate({
             path: 'authorized',
-            select: '_id name email phoneNumber sex position role isActive'
+            select: '_id image name email phoneNumber sex position role isActive'
         })
     }
     else throw new Error('Article not found');
@@ -110,7 +104,10 @@ const deleteArticle = asyncHandler(async (args) => {
 // @desc    GET barangay article
 // @access  Private
 const getArticle = asyncHandler(async (args) => {
-    const article = await Article.findById(args.id);
+    const article = await Article.findById(args.id).populate({
+        path: 'authorized',
+        select: '_id image name email phoneNumber sex position role isActive'
+    })
 
     if (!article) throw new ApolloError('Article not found');
     else return article
@@ -120,7 +117,10 @@ const getArticle = asyncHandler(async (args) => {
 // @desc    GET All barangay articles
 // @access  Private
 const getAllArticle = asyncHandler(async () => {
-    const articles = await Article.find();
+    const articles = await Article.find().populate({
+        path: 'authorized',
+        select: '_id image name email phoneNumber sex position role isActive'
+    })
 
     return articles
 });
@@ -137,7 +137,7 @@ const filterArticles = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
+        select: '_id image name email phoneNumber sex position role isActive'
     })
 
     return articles
@@ -171,13 +171,13 @@ const publishArticle = asyncHandler(async (args) => {
 
         if (user && notification) return article.populate({
             path: 'authorized',
-            select: '_id name email phoneNumber sex position role isActive'
+            select: '_id image name email phoneNumber sex position role isActive'
         })
         else throw new ApolloError('Error encountered');
     } 
     else return article.populate({
         path: 'authorized',
-        select: '_id name email phoneNumber sex position role isActive'
+        select: '_id image name email phoneNumber sex position role isActive'
     })
 });
 
