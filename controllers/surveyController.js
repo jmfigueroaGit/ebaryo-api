@@ -66,20 +66,23 @@ const getSurvey = asyncHandler(async (args) => {
 
 const submitResponce = asyncHandler(async (args) => {
     const survey = await Survey.findById(args.surveyId)
+    
     let userId = null
     if (!survey) throw new ApolloError('Survey not found!');
     const { responses } = args
+   
     for (let i = 0; i < survey.questions.length; i++) {
-        if (survey.questions[i]._id.toString() === responses[i]._id) {
-            let data = {
-                answer: responses[i].answer,
-                user: responses[i].user
+        for(let j = 0; j < responses.length; j++){
+            if (survey.questions[i]._id.toString() === responses[j]._id){
+                let data = {
+                    answer: responses[j].answer,
+                    user: responses[j].user
+                }
+                userId = responses[j].user
+                survey.questions[i].responses.push(data);
             }
-            userId = responses[i].user
-            survey.questions[i].responses.push(data);
         }
     }
-
     if (survey.save()){
         const activity = await ActivityLog.findOne({ user: userId})
         const data = {
