@@ -51,7 +51,7 @@ const updateSurvey = asyncHandler(async (args) => {
 const getSurveys = asyncHandler(async () => {
     const surveys = await Survey.find().populate({
         path: 'questions.responses.user',
-        select: '_id email isVerified'
+        select: '_id name image email isVerified'
     })
     return surveys
 })
@@ -59,7 +59,7 @@ const getSurveys = asyncHandler(async () => {
 const getSurvey = asyncHandler(async (args) => {
     const survey = await Survey.findById(args.id).populate({
         path: 'questions.responses.user',
-        select: '_id email isVerified'
+        select: '_id name image email isVerified'
     })
     return survey
 })
