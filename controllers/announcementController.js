@@ -68,6 +68,7 @@ const updateAnnouncement = asyncHandler(async (args) => {
     if (announcement.publish === true) throw new ApolloError('Announcement cannot be updated once it is published')
 
     if (announcement) {
+        announcement.subject = args.subject || announcement.subject
         announcement.description = args.description || announcement.description
         announcement.image.public_id = args.publicId || announcement.image.public_id
         announcement.image.url = args.imageUrl || announcement.image.url

@@ -9,7 +9,7 @@ const { ApolloError } = require('apollo-server')
 const getNotificationById = asyncHandler(async (args) => {
     const notification = await userNotification.findOne({ user: args.notif_id }).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        select: '_id email isVerified hasNewNotif image createdAt'
     })
 
     if (notification) {
