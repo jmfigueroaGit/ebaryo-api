@@ -4,6 +4,9 @@ module.exports = {
         announcements: () => {
             return announcementController.getAllAnnouncements()
         },
+        announcements_byDate: () => {
+            return announcementController.getByDateAnnouncements()
+        },
         announcement: (_, args) => {
             return announcementController.getAnnouncement(args)
         },

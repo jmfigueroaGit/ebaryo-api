@@ -1,5 +1,6 @@
 type Query{
     announcements: [Announcement]
+    announcements_byDate: [Announcement]
     announcement(id: ID!): Announcement
     announcement_filter(value: String!): [Announcement]
 }

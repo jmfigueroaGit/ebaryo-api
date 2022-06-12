@@ -5,6 +5,7 @@ const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const Authorized = require('../models/authorizedModel')
 const leadingzero = require('leadingzero')
+const moment = require('moment')
 
 // @desc    Create barangay announcement
 // @access  Private || Admin
@@ -114,6 +115,7 @@ const getAnnouncement = asyncHandler(async (args) => {
 // @desc    GET All barangay Announcement
 // @access  Private
 const getAllAnnouncements = asyncHandler(async () => {
+    
     const announcements = await Announcement.find().populate({
         path: 'authorized',
         select: '_id image name email phoneNumber sex position role isActive'
@@ -121,6 +123,27 @@ const getAllAnnouncements = asyncHandler(async () => {
 
     return announcements
 });
+
+// @desc    GET All barangay Announcement
+// @access  Private
+const getByDateAnnouncements = asyncHandler(async () => {
+    
+    const announcements = await Announcement.find().populate({
+        path: 'authorized',
+        select: '_id image name email phoneNumber sex position role isActive'
+    })
+    const filterByExpiration = () => {
+        const Today = Date.now()
+        return announcements.filter(function (item) {
+          return new Date(item.postedUntil).getTime() > Today;
+        });
+    };
+
+    return filterByExpiration()
+});
+
+
+
 
 // @desc    Filter annoucement
 // @access  Private
@@ -186,6 +209,7 @@ module.exports = {
     deleteAnnouncement,
     getAnnouncement,
     getAllAnnouncements,
+    getByDateAnnouncements,
     filterAnnouncement,
     publishAnnouncement
 };
