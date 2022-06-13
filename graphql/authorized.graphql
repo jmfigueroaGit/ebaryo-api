@@ -55,6 +55,7 @@ type Personnel {
     role: String
     isActive: Boolean
     createdAt: Date
+    hasNewNotif: Boolean
 }
 
 type Personel_Name{

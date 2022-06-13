@@ -63,7 +63,7 @@ const createAnnouncement = asyncHandler(async (args) => {
             if (user && notification){
                 return announcement.populate({
                     path: 'authorized',
-                    select: '_id image hasNewNotif name email phoneNumber sex position role isActive createdAt'})
+                    select: '_id hasNewNotif image hasNewNotif name email phoneNumber sex position role isActive createdAt'})
             }
             else throw new ApolloError('Error encountered');
         }
@@ -91,7 +91,7 @@ const updateAnnouncement = asyncHandler(async (args) => {
         const updated_announcement = await announcement.save()
         return updated_announcement.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive'
+            select: '_id image hasNewNotif name email phoneNumber sex position role isActive'
         })
     }
     else throw new Error('Announcement not found');
@@ -116,7 +116,7 @@ const deleteAnnouncement = asyncHandler(async (args) => {
 const getAnnouncement = asyncHandler(async (args) => {
     const announcement = await Announcement.findById(args.id).populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id image hasNewNotif name email phoneNumber sex position role isActive'
     })
 
     if (!announcement) throw new ApolloError('Announcement not found');
@@ -130,7 +130,7 @@ const getAllAnnouncements = asyncHandler(async () => {
     
     const announcements = await Announcement.find().populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id image hasNewNotif name email phoneNumber sex position role isActive'
     })
 
     return announcements
@@ -142,7 +142,7 @@ const getByDateAnnouncements = asyncHandler(async () => {
     
     const announcements = await Announcement.find().populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id image hasNewNotif name email phoneNumber sex position role isActive'
     })
     const filterByExpiration = () => {
         const Today = Date.now()
@@ -169,7 +169,7 @@ const filterAnnouncement = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id image hasNewNotif name email phoneNumber sex position role isActive'
     })
 
     return announcements
@@ -205,13 +205,13 @@ const publishAnnouncement = asyncHandler(async (args) => {
         if (user && notification){
             return announcement.populate({
                 path: 'authorized',
-                select: '_id image name email phoneNumber sex position role isActive'})
+                select: '_id hasNewNotif image name email phoneNumber sex position role isActive'})
         }
         else throw new ApolloError('Error encountered');
     }
     else return announcement.populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id image hasNewNotif name email phoneNumber sex position role isActive'
     })
 })
 

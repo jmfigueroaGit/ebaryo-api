@@ -62,13 +62,13 @@ const createArticle = asyncHandler(async (args) => {
     
             if (user && notification) return article.populate({
                 path: 'authorized',
-                select: '_id image name email phoneNumber sex position role isActive'
+                select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
             })
             else throw new ApolloError('Error encountered');
         } 
         else return article.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
         })
     }
     else throw new ApolloError('Invalid data format');
@@ -91,7 +91,7 @@ const updateArticle = asyncHandler(async (args) => {
         const updated_article = await article.save()
         return updated_article.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
         })
     }
     else throw new Error('Article not found');
@@ -116,7 +116,7 @@ const deleteArticle = asyncHandler(async (args) => {
 const getArticle = asyncHandler(async (args) => {
     const article = await Article.findById(args.id).populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
     })
 
     if (!article) throw new ApolloError('Article not found');
@@ -129,7 +129,7 @@ const getArticle = asyncHandler(async (args) => {
 const getAllArticle = asyncHandler(async () => {
     const articles = await Article.find().populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
     })
 
     return articles
@@ -147,7 +147,7 @@ const filterArticles = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
     })
 
     return articles
@@ -181,13 +181,13 @@ const publishArticle = asyncHandler(async (args) => {
 
         if (user && notification) return article.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
         })
         else throw new ApolloError('Error encountered');
     } 
     else return article.populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive'
+        select: '_id hasNewNotif image name email phoneNumber sex position role isActive'
     })
 });
 

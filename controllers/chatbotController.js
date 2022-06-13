@@ -1,7 +1,8 @@
 const { dockStart, containerBootstrap, Nlp, LangEn } = require('@nlpjs/basic');
 const asyncHandler = require('express-async-handler');
 const Chatbot = require('../models/chatbotModel')
-
+const AdminNotification = require('../models/adminNotification')
+const Authorized = require('../models/authorizedModel')
 // @desc    Get answer through chatbot
 // @access  Private
 const getAnswer = asyncHandler(async (question) => {
@@ -30,7 +31,20 @@ const getAnswer = asyncHandler(async (question) => {
         return output;
     }
     if (result.intent === 'None') {
+        await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
         if (result.locale === 'tl') {
+            const authorizedData = {
+                type: "chatbot",
+                description: `Time to train E-baryo Chatbot`,
+                notifId: tl._id
+            }
+    
+            const notification = await AdminNotification.find();
+    
+            for (let i = 0; i < notification.length; i++) {
+                notification[i].notifications.push(authorizedData)
+                notification[i].save()
+            }
             let data = null
             for (let i = 0; i < tl.data.length; i++) {
                 if (tl.data[i].intent === 'None') {
@@ -42,6 +56,18 @@ const getAnswer = asyncHandler(async (question) => {
             }
         }
         if (result.locale == 'en') {
+            const authorizedData = {
+                type: "chatbot",
+                description: `Time to train E-baryo Chatbot`,
+                notifId: en._id
+            }
+    
+            const notification = await AdminNotification.find();
+    
+            for (let i = 0; i < notification.length; i++) {
+                notification[i].notifications.push(authorizedData)
+                notification[i].save()
+            }
             let data = null
             for (let i = 0; i < en.data.length; i++) {
                 if (en.data[i].intent === 'None') {

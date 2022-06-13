@@ -30,7 +30,7 @@ const setupBarangayInfo = asyncHandler(async (args) => {
     if (barangay) {
         return barangay.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive createdAt'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive createdAt'
         })
     } else {
         throw new ApolloError('Invalid data format');
@@ -49,7 +49,7 @@ const setupBarangayOfficial = asyncHandler(async (args) => {
 
     if (barangay) return barangay.populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive createdAt'
+        select: '_id hasNewNotif image name email phoneNumber sex position role isActive createdAt'
     })
     else throw new ApolloError('Invalid data format');
 });
@@ -69,7 +69,7 @@ const setupBarangayImages = asyncHandler(async (args) => {
     if (barangay)
         return barangay.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive createdAt'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive createdAt'
         })
 });
 
@@ -86,7 +86,7 @@ const updateBarangay = asyncHandler(async (args) => {
 
         return updated_barangay.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive createdAt'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive createdAt'
         })
     } else {
         throw new ApolloError('Barangay not existed with this ID')
@@ -116,7 +116,7 @@ const getBarangay = asyncHandler(async (args) => {
     if (barangay) {
         return barangay.populate({
             path: 'authorized',
-            select: '_id image name email phoneNumber sex position role isActive createdAt'
+            select: '_id hasNewNotif image name email phoneNumber sex position role isActive createdAt'
         })
 
     } else {
@@ -130,7 +130,7 @@ const getAllBarangay = asyncHandler(async () => {
     const barangays = await Barangay.find()
     return barangays.populate({
         path: 'authorized',
-        select: '_id image name email phoneNumber sex position role isActive createdAt'
+        select: '_id hasNewNotif image name email phoneNumber sex position role isActive createdAt'
     })
 });
 
