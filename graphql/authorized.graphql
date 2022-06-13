@@ -7,7 +7,10 @@ type Mutation{
     personnel_auth(token: String!): Personnel
     personnel_login(email: String!, password: String!): Personnel_AuthPayload
     personnel_signup(
-        name: Personnel_Name!, 
+        first: String!,
+        middle: String!,
+        last: String!,
+        extension: String,
         email: String!, 
         phoneNumber: String!, 
         sex: String!, 
@@ -18,7 +21,10 @@ type Mutation{
         password: String!): Personnel
     personnel_update(
         id: ID!, 
-        name: Personnel_Name, 
+        first: String,
+        middle: String,
+        last: String,
+        extension: String,
         email: String, 
         phoneNumber: String, 
         sex: String, 
