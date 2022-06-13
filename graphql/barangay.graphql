@@ -6,9 +6,9 @@ type Query{
 }
 
 type Mutation{
-    barangay_info_setup(barangayInfo: BarangayInfoInput): Barangay
+    barangay_info_setup(authorized: ID!, barangayInfo: BarangayInfoInput): Barangay
     barangay_officials_setup(barangay_id: ID!, barangayOfficials: BarangayOfficialsInput): Barangay
-    barangay_images_setup(barangay_id: ID!, image: [Upload!]): Barangay
+    barangay_images_setup(barangay_id: ID!, image: [Upload!], barangayMap: ImageInput): Barangay
     barangay_update(barangay_id: ID!, barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, image: [ImageInput]): Barangay
     barangay_delete(barangay_id: ID!): Message  
 }
@@ -16,9 +16,10 @@ type Mutation{
 type Barangay {
     _id: ID
     authorized: Personnel
-    barangayInfo: BarangayInfo,
-    barangayOfficials: BarangayOfficials,
+    barangayInfo: BarangayInfo
+    barangayOfficials: BarangayOfficials
     images: [Image]
+    barangayMap: Image
 }
 
 type BarangayInfo{
@@ -49,6 +50,9 @@ type Demographic{
     streets: Int
     healthCenters: Int
     schools: Int
+    seniorCitizen: Int
+    pwd: Int
+    singleParent: Int
 }
 
 type BarangayOfficials {
@@ -96,13 +100,16 @@ input ContactInput{
 }
 
 input DemographicInput{
-    residents: Int,
-    families: Int,
-    households: Int,
-    landAreas: Int,
-    streets: Int,
-    healthCenter: Int,
+    residents: Int
+    families: Int
+    households: Int
+    landAreas: Int
+    streets: Int
+    healthCenter: Int
     schools: Int
+    seniorCitizen: Int
+    pwd: Int
+    singleParent: Int
 }
 
 input BarangayOfficialsInput {
@@ -111,18 +118,18 @@ input BarangayOfficialsInput {
 }
 
 input mainOfficialInput{
-    name: String,
-    position: String,
+    name: String
+    position: String
     image: String
 }
 
 input skOfficialInput{
-    name: String,
-    position: String,
+    name: String
+    position: String
     image: String
 }
 
 input ImageInput {
-    public_id: String,
+    public_id: String
     url: String
 }

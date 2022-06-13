@@ -66,7 +66,19 @@ const barangayInfo = new mongoose.Schema({
         schools: {
             type: Number,
             default: 0
-        }
+        },
+        seniorCitizen: {
+            type: Number,
+            default: 0
+        },
+        pwd: {
+            type: Number,
+            default: 0
+        },
+        singleParent: {
+            type: Number,
+            default: 0
+        },
     }
 })
 
@@ -114,7 +126,8 @@ const barangaySchema = new mongoose.Schema(
 		},
         barangayInfo: barangayInfo,
         barangayOfficials: barangayOfficials,
-        images: [image]
+        images: [image],
+        barangayMap: image
     },
     {
         timestamps: true,

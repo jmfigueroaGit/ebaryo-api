@@ -13,17 +13,28 @@ cloudinary.config({
 // @desc    Setup barangay Information
 // @access  Private
 const setupBarangayInfo = asyncHandler(async (args) => {
-    const { barangayInfo } = args;
+    const { barangayInfo, authorized } = args;
+   
+    const personnel = await Authorized.findById(authorized)
+    if(!personnel) throw new ApolloError('Personnel not found');
+    // if(personnel.role !== "Admin") throw new ApolloError('Personnel is not allowed to access this route.');
+    // const barangays = await Barangay.findOne({authorized: personnel._id})
+
+    // if(barangays) throw new ApolloError('Admin already created barangay information');
+
     const barangay = await Barangay.create({
+        authorized,
         barangayInfo
     });
 
     if (barangay) {
-        return barangay
+        return barangay.populate({
+            path: 'authorized',
+            select: '_id image name email phoneNumber sex position role isActive createdAt'
+        })
     } else {
         throw new ApolloError('Invalid data format');
     }
-    return null
 });
 
 // @desc    Setup barangay officials
@@ -36,7 +47,10 @@ const setupBarangayOfficial = asyncHandler(async (args) => {
 
     barangay.save()
 
-    if (barangay) return barangay
+    if (barangay) return barangay.populate({
+        path: 'authorized',
+        select: '_id image name email phoneNumber sex position role isActive createdAt'
+    })
     else throw new ApolloError('Invalid data format');
 });
 
@@ -53,7 +67,10 @@ const setupBarangayImages = asyncHandler(async (args) => {
     barangay.save()
 
     if (barangay)
-        return barangay
+        return barangay.populate({
+            path: 'authorized',
+            select: '_id image name email phoneNumber sex position role isActive createdAt'
+        })
 });
 
 // @desc    Update barangay 
@@ -67,7 +84,10 @@ const updateBarangay = asyncHandler(async (args) => {
 
         const updated_barangay = await barangay.save()
 
-        return updated_barangay
+        return updated_barangay.populate({
+            path: 'authorized',
+            select: '_id image name email phoneNumber sex position role isActive createdAt'
+        })
     } else {
         throw new ApolloError('Barangay not existed with this ID')
     }
@@ -94,7 +114,10 @@ const getBarangay = asyncHandler(async (args) => {
     const barangay = await Barangay.findOne({ authorized: authorized })
 
     if (barangay) {
-        return barangay
+        return barangay.populate({
+            path: 'authorized',
+            select: '_id image name email phoneNumber sex position role isActive createdAt'
+        })
 
     } else {
         throw new ApolloError('Barangay not found');
@@ -105,7 +128,10 @@ const getBarangay = asyncHandler(async (args) => {
 // @access  Private && Admin
 const getAllBarangay = asyncHandler(async () => {
     const barangays = await Barangay.find()
-    return barangays
+    return barangays.populate({
+        path: 'authorized',
+        select: '_id image name email phoneNumber sex position role isActive createdAt'
+    })
 });
 
 module.exports = {
