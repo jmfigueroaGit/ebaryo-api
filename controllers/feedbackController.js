@@ -3,7 +3,9 @@ const User = require('../models/userModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const Feedback = require('../models/feedbackModel');
-
+const Adminlog = require('../models/adminlogModel')
+const AdminNotification = require('../models/adminNotification')
+const Authorized = require('../models/authorizedModel')
 // @desc    Create barangay feedback
 // @access  Private
 const createFeedback = asyncHandler(async (args) => {
@@ -23,10 +25,30 @@ const createFeedback = asyncHandler(async (args) => {
         fdbkId
     })
 
-    if (feedback) return feedback.populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    if (feedback){ 
+        const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
+
+        const feedbackUser = await User.findById(user_id)
+
+        const authorizedData = {
+            type: "feedback",
+            description: `New feedback sent by ${feedbackUser.name}`,
+            notifId: feedback._id
+        }
+
+        const notification = await AdminNotification.find();
+
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(authorizedData)
+            notification[i].save()
+        }
+        if(authorized && notification){
+            return feedback.populate({
+                path: 'user',
+                select: '_id name email isVerified hasNewNotif image'
+            })
+        }
+    }
     else throw new ApolloError('Invalid data formatted')
 })
 
@@ -57,7 +79,7 @@ const getFeedback = asyncHandler(async (args) => {
 // @desc    Update feedback status
 // @access  Private
 const updateFeedbackStatus = asyncHandler(async (args) => {
-    const { feedback_id, status } = args
+    const { feedback_id, status, authorized_id } = args
     const feedback = await Feedback.findById(feedback_id).populate({
         path: 'user',
         select: '_id name email isVerified hasNewNotif image'
@@ -68,7 +90,18 @@ const updateFeedbackStatus = asyncHandler(async (args) => {
     feedback.status = status || feedback.status
     feedback.save()
 
-    if (feedback) return feedback
+    if (feedback){ 
+        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const adminActivity = {
+            type: "feedback",
+            title: "Update feedback status",
+            description: `${feedback.description} - ${feedback.fdbkId.toUpperCase()}`,
+            activityId: feedback._id
+        }
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
+        return feedback
+    }
     else throw new ApolloError('Invalid data formatted')
 })
 

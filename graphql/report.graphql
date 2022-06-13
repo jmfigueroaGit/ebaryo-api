@@ -10,7 +10,7 @@ type Mutation{
     report_create(user_id: ID!, report: String!, description: String!): Report
     report_update(report_id: ID!, report: String, description: String): Report
     report_delete(report_id: ID!): Message  
-    report_status(report_id: ID!, status: String!): Report
+    report_status(report_id: ID!, status: String!, authorized_id: ID!): Report
 }
 
 type Report {

@@ -5,7 +5,7 @@ const userNotification = require('../models/userNotificationModel');
 const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
-const cloudinary = require('cloudinary')
+const Adminlog = require('../models/adminlogModel')
 
 // @desc    Create barangay article
 // @access  Private || Admin
@@ -35,6 +35,16 @@ const createArticle = asyncHandler(async (args) => {
     });
 
     if (article){
+        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const adminActivity = {
+            type: "article",
+            title: "Created an Article",
+            description: `${article.title} - ${article.artclId.toUpperCase()}`,
+            activityId: article._id
+        }
+
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
         if (article.publish === true) {
             const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
     

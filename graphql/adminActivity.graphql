@@ -1,0 +1,22 @@
+scalar Date
+
+type Query{
+    activity_admins: [AdminActivityLog]
+    activity_admin(userId: ID!): AdminActivityLog
+}
+
+type AdminActivityLog{
+    _id: ID
+    authorized: Personnel
+    activities: [AdminActivity]
+    createdAt: Date
+}
+
+type AdminActivity{
+    type: String
+    title: String
+    description: String
+    date: Date
+    activityId: ID
+    createdAt: Date
+}

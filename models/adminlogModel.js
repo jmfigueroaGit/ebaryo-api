@@ -1,0 +1,39 @@
+const mongoose = require('mongoose')
+
+const AdminActivity = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['authorized', 'survey', 'request', 'announcement', 'article', 'blotter', 'report', 'feedback']
+    },
+    title: {
+        type: String,
+    },
+    description: {
+        type: String,
+    },
+    date: {
+        type: Date,
+        default: Date.now()
+    },
+    activityId: {
+        type: mongoose.Schema.Types.ObjectId,
+    }
+})
+
+const adminLogSchema = new mongoose.Schema(
+    {
+        authorized: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Authorized',
+		},
+        activities: [AdminActivity]
+    },
+    {
+        timestamps: true,
+    }
+);
+
+mongoose.models = {};
+module.exports = mongoose.model.adminLogSchema ||
+    mongoose.model('Adminlog', adminLogSchema);

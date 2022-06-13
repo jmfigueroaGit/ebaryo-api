@@ -6,7 +6,8 @@ type Query{
 type Mutation{
     survey_create(title: String!, 
     description: String!,
-    questions: [QuestionInput]
+    questions: [QuestionInput], 
+    authorized_id: ID!
     ): Survey
     survey_update(surveyId: ID,
     title: String, 

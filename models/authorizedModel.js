@@ -52,6 +52,10 @@ const authorizedSchema = new mongoose.Schema(
             type: Boolean,
             default: true
         },
+        hasNewNotif: {
+			type: Boolean,
+			default: false
+		},
         resetPasswordToken: String,
         resetPasswordExpire: Date,
     },

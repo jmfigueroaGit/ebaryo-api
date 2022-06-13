@@ -4,7 +4,9 @@ const User = require('../models/userModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const moment = require('moment')
-
+const Adminlog = require('../models/adminlogModel')
+const AdminNotification = require('../models/adminNotification')
+const Authorized = require('../models/authorizedModel')
 // @desc    Create barangay report
 // @access  Private
 const createReport = asyncHandler(async (args) => {
@@ -29,10 +31,26 @@ const createReport = asyncHandler(async (args) => {
     })
 
     if (barangay_report) {
-        return barangay_report.populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
+
+        const authorizedData = {
+            type: "report",
+            description: `New report by ${user.name}`,
+            notifId: barangay_report._id
+        }
+
+        const notification = await AdminNotification.find();
+
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(authorizedData)
+            notification[i].save()
+        }
+        if(authorized && notification){
+            return barangay_report.populate({
+                path: 'user',
+                select: '_id name email isVerified hasNewNotif image'
+            })
+        }
     } else {
         throw new ApolloError('Invalid data format');
     }
@@ -157,7 +175,7 @@ const getAllReportsByDate = asyncHandler(async (args) => {
 // @desc    Update feedback status
 // @access  Private
 const updateReportStatus = asyncHandler(async (args) => {
-    const { report_id, status } = args
+    const { report_id, status, authorized_id } = args
     const report = await Report.findById(report_id).populate({
         path: 'user',
         select: '_id email name isVerified hasNewNotif image'
@@ -168,7 +186,18 @@ const updateReportStatus = asyncHandler(async (args) => {
     report.status = status || report.status
     report.save()
 
-    if (report) return report
+    if (report){ 
+        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const adminActivity = {
+            type: "report",
+            title: "Update report status",
+            description: `${report.report} - ${report.transactionId.toUpperCase()}`,
+            activityId: report._id
+        }
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
+        return report
+    }
     else throw new ApolloError('Invalid data formatted')
 })
 

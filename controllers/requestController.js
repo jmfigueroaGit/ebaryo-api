@@ -7,6 +7,9 @@ const userNotification = require('../models/userNotificationModel');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const moment = require('moment')
+const Adminlog = require('../models/adminlogModel')
+const AdminNotification = require('../models/adminNotification')
+const Authorized = require('../models/authorizedModel')
 // @desc    Create barangay request
 // @access  Private
 const createRequest = asyncHandler(async (args) => {
@@ -38,10 +41,27 @@ const createRequest = asyncHandler(async (args) => {
         activity.activities.push(data)
         activity.save()
 
-        return barangay_request.populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
+
+        const authorizedData = {
+            type: "request",
+            description: `New document request by ${user.name}`,
+            notifId: barangay_request._id
+        }
+
+        const notification = await AdminNotification.find();
+
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(authorizedData)
+            notification[i].save()
+        }
+
+        if(authorized && notification){
+            return barangay_request.populate({
+                path: 'user',
+                select: '_id name email isVerified hasNewNotif image'
+            })
+        }
     } else {
         throw new ApolloError('Invalid data format');
     }
@@ -152,7 +172,7 @@ const getUserRequests = asyncHandler(async (args) => {
 // @desc    Update barangay request
 // @access  Private || Admin
 const changeRequestStatus = asyncHandler(async (args) => {
-    const { request_id, status } = args
+    const { request_id, status, authorized_id } = args
 
     const request = await Request.findById(request_id)
 
@@ -184,6 +204,15 @@ const changeRequestStatus = asyncHandler(async (args) => {
         }
 
     if (request) {
+        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const adminActivity = {
+            type: "request",
+            title: "Update request status",
+            description: `${request.request} - ${request.transactionId.toUpperCase()}`,
+            activityId: request._id
+        }
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
         // Check if user existed
         const user = await User.findById(request.user)
         if (!user) throw new ApolloError('User not found')

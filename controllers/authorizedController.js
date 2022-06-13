@@ -5,7 +5,8 @@ const Authorized = require('../models/authorizedModel')
 const generateToken = require('../utils/generateToken')
 const sendEmail = require('../utils/sendEmail')
 const crypto = require('crypto');
-
+const Adminlog = require('../models/adminlogModel')
+const AdminNotification = require('../models/adminNotification')
 // @desc    Get All Users
 // @access  Private || Admin
 const getAllPersonnels = asyncHandler(async () => {
@@ -30,8 +31,9 @@ const authPersonnel = asyncHandler(async (args) => {
     const personnel = await Authorized.findOne({ email }).select('+password')
 
     if (personnel && (await personnel.comparePassword(password))) {
-        if(personnel.isActive)
+        if(personnel.isActive){
             return { personnel, token: generateToken(personnel._id) }
+        }
         else throw new ApolloError("Account is deactivated")
     }
     else
@@ -79,7 +81,11 @@ const createPersonnel = asyncHandler(async (args) => {
         }
     })
 
-    if (personnel) return personnel
+    if (personnel){ 
+        await Adminlog.create({ authorized: personnel._id })
+        await AdminNotification.create({ authorized: personnel._id })
+        return personnel
+    }
     else throw new ApolloError("Invalid user data")
 })
 

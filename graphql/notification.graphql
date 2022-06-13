@@ -25,4 +25,5 @@ type Notification{
     type: String
     description: String
     date: Date
+    notifId: ID
 }

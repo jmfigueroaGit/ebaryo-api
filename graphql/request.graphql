@@ -10,7 +10,7 @@ type Mutation{
     request_create(user_id: ID!, request: String!, purpose: String!): Request
     request_update(request_id: ID!, request: String, purpose: String): Request
     request_delete(request_id: ID!): Message  
-    request_status(request_id: ID!, status: String!): Request
+    request_status(request_id: ID!, status: String!, authorized_id: ID!): Request
 }
 
 type Request {

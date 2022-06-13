@@ -2,11 +2,11 @@ const asyncHandler = require('express-async-handler');
 const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const Blotter = require('../models/blotterModel');
-
+const Adminlog = require('../models/adminlogModel')
 // @desc    Create blotter
 // @access  Private
 const createBlotter = asyncHandler(async (args) => {
-    const { caseType, description, complainant, defendant } = args
+    const { caseType, description, complainant, defendant, authorized_id } = args
 
     const blotters = await Blotter.find()
     const running = leadingzero(blotters.length + 1, 4)
@@ -20,7 +20,18 @@ const createBlotter = asyncHandler(async (args) => {
         bltrId
     })
 
-    if (blotter) return blotter
+    if (blotter){ 
+        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const adminActivity = {
+            type: "blotter",
+            title: "Created a blotter",
+            description: `${blotter.caseType} - ${blotter.bltrId.toUpperCase()}`,
+            activityId: blotter._id
+        }
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
+        return blotter
+    }
     else throw new ApolloError('Invalid data input')
 })
 
@@ -55,7 +66,7 @@ const updateBlotter = asyncHandler(async (args) => {
 })
 
 const statusBlotter = asyncHandler(async (args) => {
-    const { blotter_id, status } = args
+    const { blotter_id, status, authorized_id } = args
 
 
     const blotter = await Blotter.findById(blotter_id)
@@ -64,7 +75,18 @@ const statusBlotter = asyncHandler(async (args) => {
     blotter.status = status || blotter.status
     const updatedStatus = blotter.save()
 
-    if (updatedStatus) return updatedStatus
+    if (updatedStatus){ 
+        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const adminActivity = {
+            type: "blotter",
+            title: "Update blotter status",
+            description: `${blotter.caseType} - ${blotter.bltrId.toUpperCase()}`,
+            activityId: blotter._id
+        }
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
+        return updatedStatus
+    }
     else throw new ApolloError("Invalid data input")
 })
 

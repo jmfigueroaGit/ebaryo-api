@@ -6,6 +6,7 @@ const { ApolloError } = require('apollo-server')
 const Authorized = require('../models/authorizedModel')
 const leadingzero = require('leadingzero')
 const moment = require('moment')
+const Adminlog = require('../models/adminlogModel')
 
 // @desc    Create barangay announcement
 // @access  Private || Admin
@@ -32,6 +33,17 @@ const createAnnouncement = asyncHandler(async (args) => {
     });
 
     if (announcement){ 
+        const activityLogs = await Adminlog.findOne({ authorized: user_id})
+        const adminActivity = {
+            type: "announcement",
+            title: "Created an Announcement",
+            description: `${announcement.subject} - ${announcement.ancmtId.toUpperCase()}`,
+            activityId: announcement._id
+        }
+
+        activityLogs.activities.push(adminActivity)
+        activityLogs.save()
+        
         if(announcement.publish === true){
             const user = await User.updateMany({}, { $set: { hasNewNotif: true } });
 
@@ -51,7 +63,7 @@ const createAnnouncement = asyncHandler(async (args) => {
             if (user && notification){
                 return announcement.populate({
                     path: 'authorized',
-                    select: '_id image name email phoneNumber sex position role isActive createdAt'})
+                    select: '_id image hasNewNotif name email phoneNumber sex position role isActive createdAt'})
             }
             else throw new ApolloError('Error encountered');
         }

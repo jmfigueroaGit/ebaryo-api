@@ -7,7 +7,7 @@ type Query{
 
 type Mutation{
     feedback_create(user_id: ID!, description: String): Feedback
-    feedback_status(feedback_id: ID!, status: String!): Feedback
+    feedback_status(feedback_id: ID!, status: String!, authorized_id: ID!): Feedback
 }
 
 type Feedback{
