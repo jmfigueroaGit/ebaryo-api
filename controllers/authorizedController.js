@@ -30,14 +30,30 @@ const authPersonnel = asyncHandler(async (args) => {
     const personnel = await Authorized.findOne({ email }).select('+password')
 
     if (personnel && (await personnel.comparePassword(password))) {
-        return { personnel, token: generateToken(personnel._id) }
+        if(personnel.isActive)
+            return { personnel, token: generateToken(personnel._id) }
+        else throw new ApolloError("Account is deactivated")
     }
     else
         throw new ApolloError("Invalid email or password")
 })
 
+// @desc    Change account status
+// @access  Private 
+const updateStatusPersonnel = asyncHandler(async (args) => {
+    const personnel = await Authorized.findById(args.id)
+   
+    if (personnel) {
+        personnel.isActive = args.isActive;
+        const updated_personnel = await personnel.save();
+        return updated_personnel
+    }
+    else
+        throw new ApolloError("Personnel not found with this id")
+})
+
 // @desc    signup user
-// @access  Public 
+// @access  Private 
 const createPersonnel = asyncHandler(async (args) => {
     const { first, middle, last, extension, email, password, phoneNumber, sex, position, role, imageUrl, publicId } = args
     const emailExist = await Authorized.findOne({ email })
@@ -186,5 +202,6 @@ module.exports = {
     authPersonnelToken,
     deletePersonnel,
     verifyEmailPersonnel,
-    resetPersonnelPassword
+    resetPersonnelPassword,
+    updateStatusPersonnel
 }

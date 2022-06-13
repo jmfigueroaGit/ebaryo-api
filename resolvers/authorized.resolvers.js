@@ -31,7 +31,10 @@ module.exports = {
         },
         personnel_reset_password: (_, args) => {
             return authorizedController.resetPersonnelPassword(args)
-        }
+        },
+        personnel_account_status: (_, args) => {
+            return authorizedController.updateStatusPersonnel(args)
+        },
     }
 }
 

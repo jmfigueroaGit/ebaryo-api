@@ -36,6 +36,7 @@ type Mutation{
     personnel_delete(id: ID!): Message
     personnel_verify_email(email: String!): Reset
     personnel_reset_password(token: String!, password: String!, confirmPassword: String!): Reset
+    personnel_account_status(id: ID!, isActive: Boolean): Personnel
 }
 
 type Personnel_AuthPayload{
