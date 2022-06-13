@@ -254,6 +254,23 @@ const getRequestsByDate = asyncHandler(async (args) => {
     return requests
 });
 
+// @desc    Get all barangay request by date
+// @access  Private && Admin
+const getRequestsFilteredDate = asyncHandler(async (args) => {
+    let start = moment(args.startDate).format('yyyy-MM-DD');
+    let end = moment(args.endDate).format('yyyy-MM-DD');
+    const requests = await Request.find({
+        createdAt: {
+            $gte: start,
+            $lt: end
+        }
+    }).populate({
+        path: 'user',
+        select: '_id name email isVerified hasNewNotif image'
+    })
+    return requests
+});
+
 
 module.exports = {
     createRequest,
@@ -264,5 +281,6 @@ module.exports = {
     getUserRequests,
     getFilterRequests,
     changeRequestStatus,
-    getRequestsByDate
+    getRequestsByDate,
+    getRequestsFilteredDate
 };

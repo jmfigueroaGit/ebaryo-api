@@ -11,6 +11,9 @@ module.exports = {
         feedbacks_filter: (_, args) => {
             return feedbackController.filterFeedbacks(args)
         },
+        feedbacks_filteredDate: (_, args) => {
+            return feedbackController.getFeedbacksFilteredDate(args)
+        },
     },
     Mutation: {
         feedback_create: (_, args) => {

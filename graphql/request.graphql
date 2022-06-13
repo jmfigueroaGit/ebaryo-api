@@ -1,9 +1,12 @@
+scalar Date
+
 type Query{
     requests: [Request]
     request(id: ID!): Request
     request_filter(value: String!): [Request]
     request_user(user_id: ID!): [Request]
     request_date(value: Int!): [Request]
+    request_filteredDate(startDate: Date, endDate: Date): [Request]
 }
 
 type Mutation{

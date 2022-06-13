@@ -5,6 +5,7 @@ const leadingzero = require('leadingzero')
 const Feedback = require('../models/feedbackModel');
 const Adminlog = require('../models/adminlogModel')
 const AdminNotification = require('../models/adminNotification')
+const moment = require('moment')
 const Authorized = require('../models/authorizedModel')
 // @desc    Create barangay feedback
 // @access  Private
@@ -133,10 +134,30 @@ const filterFeedbacks = asyncHandler(async (args) => {
     }
 })
 
+// @desc    GET ALL barangay feedbacks
+// @access  Private
+const getFeedbacksFilteredDate = asyncHandler(async (args) => {
+    let start = moment(args.startDate).format('yyyy-MM-DD');
+    let end = moment(args.endDate).format('yyyy-MM-DD');
+    const feedbacks = await Feedback.find({
+        createdAt: {
+            $gte: start,
+            $lt: end
+        }
+    }).populate({
+        path: 'user',
+        select: '_id name email isVerified hasNewNotif image'
+    })
+
+    if (feedbacks) return feedbacks
+    else throw new ApolloError('Invalid data formatted')
+})
+
 module.exports = {
     createFeedback,
     getFeedbacks,
     getFeedback,
     updateFeedbackStatus,
-    filterFeedbacks
+    filterFeedbacks,
+    getFeedbacksFilteredDate
 }

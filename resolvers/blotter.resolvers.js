@@ -11,6 +11,9 @@ module.exports = {
         blotters_filter: (_, args) => {
             return blotterController.getFilterBlotter(args)
         },
+        blotters_filteredDate: (_, args) => {
+            return blotterController.getBlottersFilteredDate(args)
+        }
     },
     Mutation: {
         blotter_create: (_, args) => {

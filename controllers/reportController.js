@@ -201,6 +201,22 @@ const updateReportStatus = asyncHandler(async (args) => {
     else throw new ApolloError('Invalid data formatted')
 })
 
+const getReportsFilteredDate = asyncHandler(async (args) => {
+    let start = moment(args.startDate).format('yyyy-MM-DD');
+    let end = moment(args.endDate).format('yyyy-MM-DD');
+    const reports = await Report.find({
+        createdAt: {
+            $gte: start,
+            $lt:end
+        }
+    }).populate({
+        path: 'user',
+        select: '_id email name isVerified hasNewNotif image'
+    })
+
+    return reports
+});
+
 
 module.exports = {
     createReport,
@@ -211,5 +227,6 @@ module.exports = {
     getUserReports,
     getFilterReports,
     getAllReportsByDate,
-    updateReportStatus
+    updateReportStatus,
+    getReportsFilteredDate
 };

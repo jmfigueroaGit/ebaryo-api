@@ -16,6 +16,9 @@ module.exports = {
         request_date: (_, args) => {
             return requestController.getRequestsByDate(args)
         },
+        request_filteredDate: (_, args) => {
+            return requestController.getRequestsFilteredDate(args)
+        },
     },
     Mutation: {
         request_create: (_, args) => {

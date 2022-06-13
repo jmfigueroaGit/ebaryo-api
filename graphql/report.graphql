@@ -4,6 +4,7 @@ type Query{
     report(id: ID!): Report
     report_user(user_id: ID!): [Report]
     report_date(value: Int!): [Report]
+    reports_filteredDAte(startDate: Date, endDate: Date): [Report]
 }
 
 type Mutation{

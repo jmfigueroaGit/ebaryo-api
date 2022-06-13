@@ -16,6 +16,9 @@ module.exports = {
         report_date: (_, args) => {
             return reportController.getAllReportsByDate(args)
         },
+        reports_filteredDAte: (_, args) => {
+            return reportController.getReportsFilteredDate(args)
+        },
     },
     Mutation: {
         report_create: (_, args) => {

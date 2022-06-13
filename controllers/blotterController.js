@@ -3,6 +3,7 @@ const { ApolloError } = require('apollo-server')
 const leadingzero = require('leadingzero')
 const Blotter = require('../models/blotterModel');
 const Adminlog = require('../models/adminlogModel')
+const moment = require('moment')
 // @desc    Create blotter
 // @access  Private
 const createBlotter = asyncHandler(async (args) => {
@@ -106,11 +107,25 @@ const getFilterBlotter = asyncHandler(async (args) => {
     return blotters
 });
 
+const getBlottersFilteredDate = asyncHandler(async (args) => {
+    let start = moment(args.startDate).format('yyyy-MM-DD');
+    let end = moment(args.endDate).format('yyyy-MM-DD');
+    const blotters = await Blotter.find({
+        createdAt: {
+            $gte: start,
+            $lte: end
+        }
+    })
+
+    return blotters
+})
+
 module.exports = {
     createBlotter,
     updateBlotter,
     getBlotter,
     getBlotters,
     statusBlotter,
-    getFilterBlotter
+    getFilterBlotter,
+    getBlottersFilteredDate
 }

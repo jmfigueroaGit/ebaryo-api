@@ -2,7 +2,7 @@ type Query{
     feedbacks: [Feedback]
     feedback(feedback_id: ID!): Feedback
     feedbacks_filter(value: String!): [Feedback]
-   
+    feedbacks_filteredDate(startDate: Date, endDate: Date): [Feedback]
 }
 
 type Mutation{
