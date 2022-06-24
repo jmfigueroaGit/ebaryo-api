@@ -1,5 +1,5 @@
 const dotenv = require('dotenv')
-const dbConnect = require('./config/dbConnect')
+const dbConnect = require('./config/db_connect')
 const express = require('express');
 const path = require('path')
 const { createServer } = require('http');
