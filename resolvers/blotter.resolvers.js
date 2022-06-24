@@ -1,4 +1,4 @@
-const blotterController = require('../controllers/blotterController')
+const blotterController = require('../controllers/blotter_controller')
 
 module.exports = {
     Query: {

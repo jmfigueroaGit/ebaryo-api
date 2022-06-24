@@ -1,4 +1,4 @@
-const reportController = require('../controllers/reportController')
+const reportController = require('../controllers/report_controller')
 module.exports = {
     Query: {
         reports: () => {

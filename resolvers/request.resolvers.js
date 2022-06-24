@@ -1,4 +1,4 @@
-const requestController = require('../controllers/requestController')
+const requestController = require('../controllers/request_controller')
 module.exports = {
     Query: {
         requests: () => {

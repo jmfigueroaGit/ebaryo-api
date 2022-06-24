@@ -1,4 +1,4 @@
-const announcementController = require('../controllers/announcementController')
+const announcementController = require('../controllers/announcement_controller')
 module.exports = {
     Query: {
         announcements: () => {

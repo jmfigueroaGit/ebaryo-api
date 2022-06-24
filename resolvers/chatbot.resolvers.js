@@ -1,4 +1,4 @@
-const chatbotController = require('../controllers/chatbotController')
+const chatbotController = require('../controllers/chatbot_controller')
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 module.exports = {

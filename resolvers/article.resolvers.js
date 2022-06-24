@@ -1,4 +1,4 @@
-const articleController = require('../controllers/articleController')
+const articleController = require('../controllers/article_controller')
 module.exports = {
     Query: {
         articles: () => {

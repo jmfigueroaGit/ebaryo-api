@@ -1,4 +1,4 @@
-const userController = require('../controllers/userController')
+const userController = require('../controllers/user_controller')
 const { GraphQLUpload } = require('graphql-upload');
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();

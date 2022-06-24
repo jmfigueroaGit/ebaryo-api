@@ -1,4 +1,4 @@
-const barangayController = require('../controllers/barangayController')
+const barangayController = require('../controllers/barangay_controller')
 module.exports = {
     Query: {
         barangays: () => {

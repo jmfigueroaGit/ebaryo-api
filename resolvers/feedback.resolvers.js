@@ -1,4 +1,4 @@
-const feedbackController = require('../controllers/feedbackController')
+const feedbackController = require('../controllers/feedback_controller')
 
 module.exports = {
     Query: {

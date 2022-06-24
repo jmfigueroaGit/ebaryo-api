@@ -1,4 +1,4 @@
-const surveyController = require('../controllers/surveyController')
+const surveyController = require('../controllers/survey_controller')
 
 module.exports = {
     Query: {

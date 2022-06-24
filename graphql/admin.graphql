@@ -1,0 +1,71 @@
+type Query{
+    admins: [Admin]
+    admin(id: ID!): Admin
+}
+
+type Mutation{
+    admin_auth(token: String!): Admin
+    admin_login(email: String!, password: String!): Admin_AuthPayload
+    admin_signup(
+        first: String!,
+        middle: String!,
+        last: String!,
+        extension: String,
+        email: String!, 
+        phoneNumber: String!, 
+        sex: String!, 
+        imageUrl: String!,
+        publicId: String!, 
+        position: String!, 
+        password: String!): Admin
+    admin_update(
+        id: ID!, 
+        first: String,
+        middle: String,
+        last: String,
+        extension: String,
+        email: String, 
+        phoneNumber: String, 
+        sex: String, 
+        position: String, 
+        imageUrl: String,
+        publicId: String,
+        password: String): Admin
+    admin_verify_email(email: String!): Reset
+    admin_reset_password(token: String!, password: String!, confirmPassword: String!): Reset
+}
+
+type Admin_AuthPayload{
+    token: String,
+    admin: Admin 
+}
+
+type Admin {
+    _id: ID
+    name: Admin_Name
+    email: String
+    image: Image
+    phoneNumber: String
+    sex: String
+    position: String
+    isActive: Boolean
+    createdAt: Date
+    hasNewNotif: Boolean
+}
+
+type Admin_Name{
+    first: String
+    middle: String
+    last: String
+    extension: String
+}
+
+type Message{
+    message: String
+}
+
+type Reset{
+    success: Boolean
+    message: String
+}
+

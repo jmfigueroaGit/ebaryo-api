@@ -1,4 +1,4 @@
-const residentController = require('../controllers/residentController')
+const residentController = require('../controllers/resident_controller')
 module.exports = {
     Query: {
         residents: () => {

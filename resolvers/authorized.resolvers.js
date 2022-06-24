@@ -1,4 +1,4 @@
-const authorizedController = require('../controllers/authorizedController')
+const authorizedController = require('../controllers/authorized_controller')
 module.exports = {
     Query: {
         personnels: () => {
