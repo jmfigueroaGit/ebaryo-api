@@ -4,16 +4,14 @@ const leadingzero = require('leadingzero')
 
 const Article = require('../models/article_model');
 const Authorized = require('../models/authorized_model');
-const Admin = require('../models/admin_model')
 const User = require('../models/user_model');
 const userNotification = require('../models/user_notification_model');
-const Adminlog = require('../models/admin_log_model')
 const Authorizedlog = require('../models/authorized_log_model')
 
 // @desc    Create barangay article
 // @access  Private || Admin
 const createArticle = asyncHandler(async (args) => {
-    const { author, imageUrl, publicId, title, body, publish } = args;
+    const { authorizedId, imageUrl, publicId, title, body, publish } = args;
 
 
     const articleLength = await Article.find()
@@ -21,7 +19,7 @@ const createArticle = asyncHandler(async (args) => {
     const artclId = 'artcl-22-' + running;
 
     const article = await Article.create({
-        author,
+        authorized: authorizedId,
         image: {
             public_id: publicId,
             url: imageUrl
@@ -33,21 +31,10 @@ const createArticle = asyncHandler(async (args) => {
     });
 
     if (article){
-        const admin = await Admin.findById(author)
-        const authorized = await Authorized.findById(author)
+        const authorized = await Authorized.findById(authorizedId)
 
-        if(admin){
-            const activityLogs = await Adminlog.findOne({ admin: author })
-            const adminActivity = {
-                type: "article",
-                title: "Created an Article",
-                description: `${article.title} - ${article.artclId.toUpperCase()}`,
-                activityId: article._id
-            }
-            activityLogs.activities.push(adminActivity)
-            activityLogs.save()
-        } else if (authorized){
-            const activityLogs = await Authorizedlog.findOne({ admin: author })
+        if (authorized){
+            const activityLogs = await Authorizedlog.findOne({ authorized: authorizedId })
             const authorizedActivity = {
                 type: "article",
                 title: "Created an Article",
@@ -72,10 +59,10 @@ const createArticle = asyncHandler(async (args) => {
                 notification[i].save()
             }
     
-            if (user && notification) return article
+            if (user && notification) return article.populate('authorized')
             else throw new ApolloError('Error encountered');
         } 
-        else return article
+        else return article.populate('authorized')
     }
     else throw new ApolloError('Invalid data format');
 });
@@ -95,7 +82,7 @@ const updateArticle = asyncHandler(async (args) => {
         article.publish = args.publish || article.publish
 
         const updated_article = await article.save()
-        return updated_article
+        return updated_article.populate('authorized')
     }
     else throw new Error('Article not found');
 
@@ -117,7 +104,7 @@ const deleteArticle = asyncHandler(async (args) => {
 // @desc    GET barangay article
 // @access  Private
 const getArticle = asyncHandler(async (args) => {
-    const article = await Article.findById(args.id)
+    const article = await Article.findById(args.id).populate('authorized')
 
     if (!article) throw new ApolloError('Article not found');
     else return article
@@ -127,7 +114,7 @@ const getArticle = asyncHandler(async (args) => {
 // @desc    GET All barangay articles
 // @access  Private
 const getAllArticle = asyncHandler(async () => {
-    const articles = await Article.find()
+    const articles = await Article.find().populate('authorized')
 
     return articles
 });
@@ -142,7 +129,7 @@ const filterArticles = asyncHandler(async (args) => {
             { artclId: { $regex: value } },
             { body: { $regex: value } }
         ]
-    })
+    }).populate('authorized')
 
     return articles
 })
@@ -173,10 +160,10 @@ const publishArticle = asyncHandler(async (args) => {
             notification[i].save()
         }
 
-        if (user && notification) return article
+        if (user && notification) return article.populate('authorized')
         else throw new ApolloError('Error encountered');
     } 
-    else return article
+    else return article.populate('authorized')
 });
 
 

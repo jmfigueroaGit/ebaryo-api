@@ -43,6 +43,12 @@ const authorizedSchema = new mongoose.Schema(
 				required: true
 			},
 		},
+        role:{
+            type: String,
+            required: true,
+            enum: ["admin", "moderator"],
+            default: "moderator"
+        },
         isActive: {
             type: Boolean,
             default: true
@@ -55,7 +61,6 @@ const authorizedSchema = new mongoose.Schema(
         resetPasswordExpire: Date,
         barangay: {
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref: 'Barangay',
 		},
     },

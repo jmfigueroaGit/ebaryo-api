@@ -8,9 +8,6 @@ const Feedback = require('../models/feedback_model');
 const Authorized = require('../models/authorized_model')
 const Authorizedlog = require('../models/authorized_log_model')
 const AuthorizedNotification = require('../models/authorized_notification_model')
-const Admin = require('../models/admin_model')
-const Adminlog = require('../models/admin_log_model')
-const AdminNotification = require('../models/admin_notification_model')
 
 
 // @desc    Create barangay feedback
@@ -32,42 +29,36 @@ const createFeedback = asyncHandler(async (args) => {
         fdbkId
     })
 
-    // Must have a notification in admin and authorized person of assigned barangay
-    // if (feedback){ 
-    //     const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
+   
+    if (feedback){ 
+        const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
 
-    //     const feedbackUser = await User.findById(user_id)
+        const feedbackUser = await User.findById(user_id)
 
-    //     const authorizedData = {
-    //         type: "feedback",
-    //         description: `New feedback sent by ${feedbackUser.name}`,
-    //         notifId: feedback._id
-    //     }
+        const authorizedData = {
+            type: "feedback",
+            description: `New feedback sent by ${feedbackUser.name}`,
+            notifId: feedback._id
+        }
 
-    //     const notification = await AdminNotification.find();
+        const notification = await AuthorizedNotification.find();
 
-    //     for (let i = 0; i < notification.length; i++) {
-    //         notification[i].notifications.push(authorizedData)
-    //         notification[i].save()
-    //     }
-    //     if(authorized && notification){
-    //         return feedback.populate({
-    //             path: 'user',
-    //             select: '_id name email isVerified hasNewNotif image'
-    //         })
-    //     }
-    // }
-    // else throw new ApolloError('Invalid data formatted')
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(authorizedData)
+            notification[i].save()
+        }
+        if(authorized && notification){
+            return feedback.populate('user')
+        }
+    }
+    else throw new ApolloError('Invalid data formatted')
 })
 
 
 // @desc    GET ALL barangay feedbacks
 // @access  Private
 const getFeedbacks = asyncHandler(async () => {
-    const feedbacks = await Feedback.find().populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const feedbacks = await Feedback.find().populate('user')
 
     if (feedbacks) return feedbacks
     else throw new ApolloError('Invalid data formatted')
@@ -75,10 +66,7 @@ const getFeedbacks = asyncHandler(async () => {
 // @desc    GET Single barangay feedback
 // @access  Private
 const getFeedback = asyncHandler(async (args) => {
-    const feedback = await Feedback.findById(args.feedback_id).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const feedback = await Feedback.findById(args.feedback_id).populate('user')
 
     if (feedback) return feedback
     else throw new ApolloError('Feedback not found')
@@ -88,10 +76,7 @@ const getFeedback = asyncHandler(async (args) => {
 // @access  Private
 const updateFeedbackStatus = asyncHandler(async (args) => {
     const { feedback_id, status, authorized_id } = args
-    const feedback = await Feedback.findById(feedback_id).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const feedback = await Feedback.findById(feedback_id).populate('user')
 
     if (!feedback) throw new ApolloError('Feedback not found')
 
@@ -99,7 +84,7 @@ const updateFeedbackStatus = asyncHandler(async (args) => {
     feedback.save()
 
     if (feedback){ 
-        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const activityLogs = await Authorizedlog.findOne({ authorized: authorized_id })
         const adminActivity = {
             type: "feedback",
             title: "Update feedback status",
@@ -119,10 +104,7 @@ const filterFeedbacks = asyncHandler(async (args) => {
     const value = args.value
     const user = await User.findOne({ email: value })
     if(user){
-        const feedbacks = await Feedback.find({ user: user._id }).populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        const feedbacks = await Feedback.find({ user: user._id }).populate('user')
         return feedbacks
     }
     else{
@@ -132,10 +114,7 @@ const filterFeedbacks = asyncHandler(async (args) => {
                 { fdbkId: { $regex: args.value.toLowerCase() } },
                 { status: { $regex: value.toLowerCase() } },
             ]
-        }).populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        }).populate('user')
     
         return feedbacks
     }
@@ -151,10 +130,7 @@ const getFeedbacksFilteredDate = asyncHandler(async (args) => {
             $gte: start,
             $lt: end
         }
-    }).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    }).populate('user')
 
     if (feedbacks) return feedbacks
     else throw new ApolloError('Invalid data formatted')

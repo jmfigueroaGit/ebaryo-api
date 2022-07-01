@@ -6,14 +6,12 @@ const Announcement = require('../models/announcement_model');
 const User = require('../models/user_model')
 const userNotification = require('../models/user_notification_model');
 const Authorized = require('../models/authorized_model')
-const Admin = require('../models/admin_model')
 const Authorizedlog = require('../models/authorized_log_model') 
-const Adminlog = require('../models/admin_log_model');
 
 // @desc    Create barangay announcement
 // @access  Private || Admin
 const createAnnouncement = asyncHandler(async (args) => {
-    const { subject, description, author, imageUrl, publicId, postedUntil, publish } = args;
+    const { subject, description, authorizedId, imageUrl, publicId, postedUntil, publish } = args;
 
     const annouceLength = await Announcement.find()
     const running = leadingzero(annouceLength.length + 1, 4)
@@ -25,7 +23,7 @@ const createAnnouncement = asyncHandler(async (args) => {
             public_id: publicId,
             url: imageUrl
         },
-        author,
+        authorized: authorizedId,
         description,
         postedUntil,
         publish,
@@ -34,21 +32,9 @@ const createAnnouncement = asyncHandler(async (args) => {
 
 
     if (announcement){ 
-        const admin = await Admin.findById(author)
-        const authorized = await Authorized.findById(author)
-
-        if(admin){
-            const activityLogs = await Adminlog.findOne({ admin: author })
-            const adminActivity = {
-                type: "announcement",
-                title: "Created an Announcement",
-                description: `${announcement.subject} - ${announcement.ancmtId.toUpperCase()}`,
-                activityId: announcement._id
-            }
-            activityLogs.activities.push(adminActivity)
-            activityLogs.save()
-        } else if (authorized){
-            const activityLogs = await Authorizedlog.findOne({ admin: author })
+        const authorized = await Authorized.findById(authorizedId)
+        if (authorized) {
+            const activityLogs = await Authorizedlog.findOne({ authorized: authorizedId })
             const authorizedActivity = {
                 type: "announcement",
                 title: "Created an Announcement",
@@ -76,11 +62,11 @@ const createAnnouncement = asyncHandler(async (args) => {
             }
     
             if (user && notification){
-                return announcement
+                return announcement.populate('authorized')
             }
             else throw new ApolloError('Error encountered');
         }
-        else return announcement
+        else return announcement.populate('authorized')
 
     }
     else throw new ApolloError('Invalid data format');
@@ -89,7 +75,7 @@ const createAnnouncement = asyncHandler(async (args) => {
 // @desc    Update barangay announcement
 // @access  Private || Admin
 const updateAnnouncement = asyncHandler(async (args) => {
-    const announcement = await Announcement.findById(args.announce_id)
+    const announcement = await Announcement.findById(args.announceId)
 
     if (announcement.publish === true) throw new ApolloError('Announcement cannot be updated once it is published')
 
@@ -102,7 +88,7 @@ const updateAnnouncement = asyncHandler(async (args) => {
         announcement.publish = args.publish || announcement.publish
 
         const updated_announcement = await announcement.save()
-        return updated_announcement
+        return updated_announcement.populate('authorized')
     }
     else throw new Error('Announcement not found');
 
@@ -124,7 +110,7 @@ const deleteAnnouncement = asyncHandler(async (args) => {
 // @desc    GET barangay Announcement
 // @access  Private
 const getAnnouncement = asyncHandler(async (args) => {
-    const announcement = await Announcement.findById(args.id)
+    const announcement = await Announcement.findById(args.id).populate('authorized')
 
     if (!announcement) throw new ApolloError('Announcement not found');
     else return announcement
@@ -133,7 +119,7 @@ const getAnnouncement = asyncHandler(async (args) => {
 // @desc    GET All barangay Announcement
 // @access  Private
 const getAllAnnouncements = asyncHandler(async () => {   
-    const announcements = await Announcement.find()
+    const announcements = await Announcement.find().populate('authorized')
     return announcements
 });
 
@@ -141,7 +127,7 @@ const getAllAnnouncements = asyncHandler(async () => {
 // @access  Private
 const getByDateAnnouncements = asyncHandler(async () => {
     
-    const announcements = await Announcement.find()
+    const announcements = await Announcement.find().populate('authorized')
     const filterByExpiration = () => {
         const Today = Date.now()
         return announcements.filter(function (item) {
@@ -162,7 +148,7 @@ const filterAnnouncement = asyncHandler(async (args) => {
             { ancmtId: { $regex: value } },
             { description: { $regex: value } },
         ]
-    })
+    }).populate('authorized')
 
     return announcements
 
@@ -194,7 +180,7 @@ const publishAnnouncement = asyncHandler(async (args) => {
             notification[i].save()
         }
 
-        if (user && notification) return announcement
+        if (user && notification) return announcement.populate('authorized')
         else throw new ApolloError('Error encountered');
     }
     else return announcement

@@ -5,9 +5,11 @@ const AuthorizedLog = require('../models/authorized_log_model')
 // @desc    Get barangay
 // @access  Private 
 const getActivityLogById = asyncHandler(async (args) => {
-    const activitylog = await AuthorizedLog.findOne({ authorized: args.userId }).populate({
+    const activitylog = await AuthorizedLog.findOne({ authorized: args.authorizedId }).populate({
         path: 'authorized',
-        select: '_id image hasNewNotif name email phoneNumber sex position isActive createdAt'})
+        populate: {
+            path: 'barangay',
+        }})
 
     if (activitylog) {
         return activitylog
@@ -19,7 +21,9 @@ const getActivityLogById = asyncHandler(async (args) => {
 const getActivityLogs = asyncHandler(async (args) => {
     const activitylogs = await AuthorizedLog.find().populate({
         path: 'authorized',
-        select: '_id image hasNewNotif name email phoneNumber sex position isActive createdAt'})
+        populate: {
+            path: 'barangay',
+        }})
 
     if (activitylogs) {
         return activitylogs

@@ -17,8 +17,9 @@ type Mutation{
         imageUrl: String!,
         publicId: String!, 
         position: String!, 
-        role: String!, 
-        password: String!): Personnel
+        password: String!,
+        role: String!
+        barangayId: ID): Personnel
     personnel_update(
         id: ID!, 
         first: String,
@@ -29,7 +30,6 @@ type Mutation{
         phoneNumber: String, 
         sex: String, 
         position: String, 
-        role: String, 
         imageUrl: String,
         publicId: String,
         password: String): Personnel
@@ -52,10 +52,11 @@ type Personnel {
     phoneNumber: String
     sex: String
     position: String
-    role: String
     isActive: Boolean
     createdAt: Date
+    role: String
     hasNewNotif: Boolean
+    barangay: Barangay
 }
 
 type Personel_Name{

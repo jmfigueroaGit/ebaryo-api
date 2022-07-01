@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema(
 	{
-		author: {
+		authorized: {
 			type: mongoose.Schema.Types.ObjectId,
-			required: true
+			required: true,
+			ref: "Authorized"
 		},
 		image: {
 			public_id: {

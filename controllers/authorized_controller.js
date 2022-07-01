@@ -32,7 +32,7 @@ const getPersonnelById = asyncHandler(async (args) => {
 // @access  Public 
 const authPersonnel = asyncHandler(async (args) => {
     const { email, password } = args
-    const personnel = await Authorized.findOne({ email }).select('+password')
+    const personnel = await Authorized.findOne({ email }).select('+password').populate('barangay')
 
     if (personnel && (await personnel.comparePassword(password))) {
         if(personnel.isActive){
@@ -61,16 +61,17 @@ const updateStatusPersonnel = asyncHandler(async (args) => {
 // @desc    signup user
 // @access  Private 
 const createPersonnel = asyncHandler(async (args) => {
-    const { first, middle, last, extension, email, password, phoneNumber, sex, position, imageUrl, publicId, barangayId } = args
+    const { first, middle, last, extension, email, password, phoneNumber, sex, position, imageUrl, publicId, barangayId, role } = args
 
     const barangay = await Barangay.findById(barangayId)
 
-    if(!barangay) throw new ApolloError("Barangay not found with this Id")
+    //if(!barangay) throw new ApolloError("Barangay not found with this Id")
 
     const emailExist = await Authorized.findOne({ email })
+    const phoneNumberExist = await Authorized.findOne({ phoneNumber })
 
     if (emailExist) throw new ApolloError("Email is already used")
-
+    if (phoneNumberExist) throw new ApolloError("Phone number is already used.")
     const personnel = await Authorized.create({
         barangay: barangayId,
         name: {
@@ -83,8 +84,8 @@ const createPersonnel = asyncHandler(async (args) => {
         password, 
         phoneNumber, 
         sex, 
-        position, 
-        role, 
+        role,
+        position,
         image: {
             public_id: publicId,
             url: imageUrl
@@ -94,7 +95,7 @@ const createPersonnel = asyncHandler(async (args) => {
     if (personnel){ 
         await Authorizedlog.create({ authorized: personnel._id })
         await AuthorizedNotification.create({ authorized: personnel._id })
-        return personnel
+        return personnel.populate('barangay')
     }
     else throw new ApolloError("Invalid user data")
 })
@@ -114,12 +115,15 @@ const updatePersonnel = asyncHandler(async (args) => {
         personnel.phoneNumber = args.phoneNumber || personnel.phoneNumber
         personnel.sex = args.sex || personnel.sex
         personnel.position = args.position || personnel.position
-        personnel.role = args.role || personnel.role
         if (args.password) {
             personnel.password = args.password;
         }
         const updated_personnel = await personnel.save();
-        return updated_personnel
+        return updated_personnel.populate({
+            path: 'barangay',
+            populate: {
+               path: 'admin'
+        }})
     }
     else
         throw new ApolloError("Personnel not found with this id")
@@ -131,7 +135,7 @@ const authPersonnelToken = asyncHandler(async (token) => {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
     const personnel = Authorized.findById(id)
     if (personnel)
-        return personnel
+        return personnel.populate('barangay')
 })
 
 // @desc    delete user 

@@ -5,9 +5,11 @@ const AuthorizedNotification = require('../models/authorized_notification_model'
 // @desc    Get barangay
 // @access  Private 
 const getNotificationById = asyncHandler(async (args) => {
-    const notification = await AuthorizedNotification.findOne({ authorized: args.notifId }).populate({
+    const notification = await AuthorizedNotification.findOne({ authorized: args.authorizedId }).populate({
         path: 'authorized',
-        select: '_id image hasNewNotif name email phoneNumber sex position isActive createdAt'})
+        populate: {
+            path: 'barangay'
+        }})
 
     if (notification) {
         return notification

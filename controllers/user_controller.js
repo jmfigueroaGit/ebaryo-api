@@ -14,7 +14,12 @@ const sendEmail = require('../utils/sendEmail')
 // @desc    Get All Users
 // @access  Private || Admin
 const getAllUsers = asyncHandler(async () => {
-    const users = await User.find()
+    const users = await User.find().populate({
+        path: 'barangay',
+        populate: {
+            path: 'admin'
+        } 
+    })
     return users
 });
 
@@ -34,7 +39,12 @@ const getFilterUsers = asyncHandler(async (args) => {
 // @desc    Get User by Id
 // @access  Private 
 const getUserById = asyncHandler(async (id) => {
-    const user = await User.findById(id)
+    const user = await User.findById(id).populate({
+        path: 'barangay',
+        populate: {
+            path: 'admin'
+        } 
+    })
     if (user)
         return user
     else
@@ -44,63 +54,18 @@ const getUserById = asyncHandler(async (id) => {
 // @desc    login user
 // @access  Public 
 const authUser = asyncHandler(async (email, password) => {
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ email }).select('+password').populate({
+        path: 'barangay',
+        populate: {
+            path: 'admin'
+        } 
+    })
 
     if (user && (await user.comparePassword(password))) {
         return { user, token: generateToken(user._id) }
     }
     else
         throw new ApolloError("Invalid email or password")
-})
-
-// @desc    signup user
-// @access  Public 
-
-const signupUser = asyncHandler(async (args) => {
-    const { email, password, file } = args
-    const { createReadStream } = await file
-    cloudinary.config({
-        cloud_name: process.env.CLOUD_NAME,
-        api_key: process.env.API_KEY,
-        api_secret: process.env.API_SECRET,
-    });
-    const stream = createReadStream()
-    let url = null, public_id = null;
-    const cloudinaryUpload = async ({ stream }) => {
-        try {
-            await new Promise((resolve, reject) => {
-                const streamLoad = cloudinary.v2.uploader.upload_stream(function (error, result) {
-                    if (result) {
-                        url = result.secure_url;
-                        public_id = result.public_id;
-                        resolve({ url, public_id })
-                    } else {
-                        reject(error);
-                    }
-                });
-                stream.pipe(streamLoad);
-            });
-        }
-        catch (err) {
-            throw new Error(`Failed to upload profile picture ! Err:${err.message}`);
-        }
-    };
-    await cloudinaryUpload({ stream });
-    const emailExist = await User.findOne({ email })
-
-    if (emailExist) throw new ApolloError("Email is already used")
-
-    const user = await User.create({
-        email,
-        password,
-        image: {
-            url,
-            public_id
-        }
-    })
-
-    if (user) return { user, token: generateToken(user._id) }
-    else throw new ApolloError("Invalid user data")
 })
 
 // @desc    update user
@@ -113,7 +78,12 @@ const updateUser = asyncHandler(async (args) => {
             user.password = args.password;
         }
         await user.save();
-        return user
+        return user.populate({
+            path: 'barangay',
+            populate: {
+                path: 'admin'
+            } 
+        })
     }
     else
         throw new ApolloError("User not found with this id")
@@ -125,9 +95,13 @@ const authToken = asyncHandler(async (token) => {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
     const user = User.findById(id)
     if (user)
-        return user
+        return user.populate({
+            path: 'barangay',
+            populate: {
+                path: 'admin'
+            } 
+        })
 })
-
 
 // @desc    delete user 
 // @access  Private | Admin
@@ -211,7 +185,12 @@ const readNotification = asyncHandler(async (args) => {
     const user = await User.findById(args.id)
     user.hasNewNotif = false
     await user.save()
-    return user
+    return user.populate({
+        path: 'barangay',
+        populate: {
+            path: 'admin'
+        } 
+    })
 })
 
 module.exports = {
@@ -219,7 +198,6 @@ module.exports = {
     getFilterUsers,
     getUserById,
     authUser,
-    signupUser,
     updateUser,
     authToken,
     deleteUser,

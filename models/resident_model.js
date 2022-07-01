@@ -7,11 +7,6 @@ const residentSchema = new mongoose.Schema(
 			required: true,
 			ref: 'User',
 		},
-		barangay: {
-			type: mongoose.Schema.Types.ObjectId,
-			required: true,
-			ref: 'Barangay',
-		},
 		name: {
 			first: { type: String, required: true },
 			middle: { type: String, required: true },

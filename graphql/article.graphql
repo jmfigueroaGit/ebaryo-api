@@ -6,7 +6,7 @@ type Query{
 
 type Mutation{
     article_create(
-        authorized_id: ID!, 
+        authorizedId: ID!, 
         imageUrl: String!,
         publicId: String!, 
         title: String!, 

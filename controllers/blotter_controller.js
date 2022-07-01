@@ -4,7 +4,6 @@ const leadingzero = require('leadingzero')
 const moment = require('moment')
 
 const Blotter = require('../models/blotter_model');
-const Adminlog = require('../models/admin_log_model')
 const Authorizedlog = require('../models/authorized_log_model')
 
 // @desc    Create blotter
@@ -28,7 +27,6 @@ const createBlotter = asyncHandler(async (args) => {
         const authorized_activity = await Authorizedlog.findOne({
             authorized: authorized_id 
         })
-        const admin_activity = await Adminlog.findOne({ admin: authorized_id})
 
         if(authorized_activity){
             const adminActivity = {
@@ -40,16 +38,7 @@ const createBlotter = asyncHandler(async (args) => {
             authorized_activity.activities.push(adminActivity)
             authorized_activity.save()
         }
-        else if(admin_activity){
-            const adminActivity = {
-                type: "blotter",
-                title: "Created a blotter",
-                description: `${blotter.caseType} - ${blotter.bltrId.toUpperCase()}`,
-                activityId: blotter._id
-            }
-            admin_activity.activities.push(adminActivity)
-            admin_activity.save()
-        }
+
         return blotter
     }
     else throw new ApolloError('Invalid data input')
@@ -94,23 +83,12 @@ const statusBlotter = asyncHandler(async (args) => {
     blotter.status = status || blotter.status
     const updatedStatus = blotter.save()
 
-    if (updatedStatus){ 
-        const admin_activity = await Adminlog.findOne({
-            admin: authorized_id
-        })
+    if (updatedStatus){
         const authorized_activity = await Authorizedlog.findOne({
             authorized: authorized_id
         })
-        if(admin_activity){
-            const adminActivity = {
-                type: "blotter",
-                title: "Update blotter status",
-                description: `${blotter.caseType} - ${blotter.bltrId.toUpperCase()}`,
-                activityId: blotter._id
-            }
-            admin_activity.activities.push(adminActivity)
-            admin_activity.save()
-        }else if(authorized_activity){
+
+        if(authorized_activity){
             const adminActivity = {
                 type: "blotter",
                 title: "Update blotter status",

@@ -1,0 +1,22 @@
+scalar Date
+
+type Query{
+    authorized_activities: [AuthorizedActivityLog]
+    authorized_activity(authorizedId: ID!): AuthorizedActivityLog
+}
+
+type AuthorizedActivityLog{
+    _id: ID
+    authorized: Personnel
+    activities: [AuthorizedActivity]
+    createdAt: Date
+}
+
+type AuthorizedActivity{
+    type: String
+    title: String
+    description: String
+    date: Date
+    activityId: ID
+    createdAt: Date
+}

@@ -5,8 +5,8 @@ const moment = require('moment')
 
 const Report = require('../models/report_model');
 const User = require('../models/user_model');
-const Adminlog = require('../models/admin_log_model')
-const AdminNotification = require('../models/admin_notification_model')
+const Authorizedlog = require('../models/authorized_log_model')
+const AuthorizedNotification = require('../models/authorized_notification_model')
 const Authorized = require('../models/authorized_model')
 
 // @desc    Create barangay report
@@ -20,7 +20,6 @@ const createReport = asyncHandler(async (args) => {
     const reportLength = await Report.find()
     const running = leadingzero(reportLength.length + 1, 4)
     const transactionId = 'rprt-22-' + running;
-    console.log(user_id)
     if (user.isVerified === false) {
         throw new ApolloError('User must verified first')
     }
@@ -33,30 +32,27 @@ const createReport = asyncHandler(async (args) => {
     })
 
     // Must have a notification in admin and authorized person of assigned barangay
-    // if (barangay_report) {
-    //     const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
+    if (barangay_report) {
+        const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
 
-    //     const authorizedData = {
-    //         type: "report",
-    //         description: `New report by ${user.name}`,
-    //         notifId: barangay_report._id
-    //     }
+        const authorizedData = {
+            type: "report",
+            description: `New report by ${user.name}`,
+            notifId: barangay_report._id
+        }
 
-    //     const notification = await AdminNotification.find();
+        const notification = await AuthorizedNotification.find();
 
-    //     for (let i = 0; i < notification.length; i++) {
-    //         notification[i].notifications.push(authorizedData)
-    //         notification[i].save()
-    //     }
-    //     if(authorized && notification){
-    //         return barangay_report.populate({
-    //             path: 'user',
-    //             select: '_id name email isVerified hasNewNotif image'
-    //         })
-    //     }
-    // } else {
-    //     throw new ApolloError('Invalid data format');
-    // }
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(authorizedData)
+            notification[i].save()
+        }
+        if(authorized && notification){
+            return barangay_report.populate('user')
+        }
+    } else {
+        throw new ApolloError('Invalid data format');
+    }
 });
 
 // @desc    Update barangay report
@@ -70,10 +66,7 @@ const updateReport = asyncHandler(async (args) => {
 
         const updated_report = await report.save()
 
-        return updated_report.populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        return updated_report.populate('user')
     } else {
         throw new ApolloError('Report not existed with this ID')
     }
@@ -95,14 +88,10 @@ const deleteReport = asyncHandler(async (args) => {
 // @desc    Get barangay report
 // @access  Private || Admin
 const getReportById = asyncHandler(async (args) => {
-    const report = await Report.findById(args.id).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const report = await Report.findById(args.id).populate('user')
 
     if (report) {
         return report
-
     } else {
         throw new ApolloError('Report not found');
     }
@@ -111,10 +100,7 @@ const getReportById = asyncHandler(async (args) => {
 // @desc    Get all barangay report
 // @access  Private && Admin
 const getAllReports = asyncHandler(async () => {
-    const reports = await Report.find().populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const reports = await Report.find().populate('user')
 
     return reports
 });
@@ -123,10 +109,7 @@ const getFilterReports = asyncHandler(async (args) => {
     const value = args.value
     const user = await User.findOne({ email: value })
     if(user){
-        const reports = await Report.find({ user: user._id }).populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        const reports = await Report.find({ user: user._id }).populate('user')
         return reports
     }
     else{
@@ -148,10 +131,7 @@ const getFilterReports = asyncHandler(async (args) => {
 // @desc    Get all barangay reports of current logged in user
 // @access  Private
 const getUserReports = asyncHandler(async (args) => {
-    const reports = await Report.find({ user: args.user_id }).populate({
-        path: 'user',
-        select: '_id email name isVerified hasNewNotif image'
-    })
+    const reports = await Report.find({ user: args.user_id }).populate('user')
 
     if (reports) {
         return reports
@@ -167,10 +147,7 @@ const getAllReportsByDate = asyncHandler(async (args) => {
             $gte: today.toDate(),
             $lte: moment(today).endOf('day').toDate()
         }
-    }).populate({
-        path: 'user',
-        select: '_id email name isVerified hasNewNotif image'
-    })
+    }).populate('user')
 
     return reports
 });
@@ -179,10 +156,7 @@ const getAllReportsByDate = asyncHandler(async (args) => {
 // @access  Private
 const updateReportStatus = asyncHandler(async (args) => {
     const { report_id, status, authorized_id } = args
-    const report = await Report.findById(report_id).populate({
-        path: 'user',
-        select: '_id email name isVerified hasNewNotif image'
-    })
+    const report = await Report.findById(report_id).populate('user')
 
     if (!report) throw new ApolloError('Report not found')
 
@@ -190,7 +164,7 @@ const updateReportStatus = asyncHandler(async (args) => {
     report.save()
 
     if (report){ 
-        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const activityLogs = await Authorizedlog.findOne({ authorized: authorized_id })
         const adminActivity = {
             type: "report",
             title: "Update report status",
@@ -212,10 +186,7 @@ const getReportsFilteredDate = asyncHandler(async (args) => {
             $gte: start,
             $lt:end
         }
-    }).populate({
-        path: 'user',
-        select: '_id email name isVerified hasNewNotif image'
-    })
+    }).populate('user')
 
     return reports
 });

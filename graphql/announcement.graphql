@@ -7,7 +7,7 @@ type Query{
 
 type Mutation{
     announcement_create(
-        user_id: ID!, 
+        authorizedId: ID!, 
         imageUrl: String!,
         publicId: String!
         subject: String!, 
@@ -16,7 +16,7 @@ type Mutation{
         publish: Boolean): Announcement
 
     announcement_update(
-        announce_id: ID!, 
+        announceId: ID!, 
         imageUrl: String,
         publicId: String,
         subject: String, 

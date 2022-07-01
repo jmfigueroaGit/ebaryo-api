@@ -5,6 +5,11 @@ const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema(
 	{
+		barangay: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Barangay',
+		},
 		email: {
 			type: String,
 			required: [true, 'This field  is required'],

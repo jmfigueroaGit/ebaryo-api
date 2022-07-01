@@ -9,7 +9,6 @@ type Query{
 type Mutation{
     user_auth(token: String!): User
     user_login(email: String!, password: String!): AuthPayload
-    user_signup(email: String!, password: String!, file: Upload!): AuthPayload
     user_update(id: ID!, email: String, password: String): User
     user_delete(id: ID!): Message
     user_verify_email(email: String!): Reset
@@ -34,6 +33,7 @@ type User {
     hasNewNotif: Boolean
     image: UserImage
     createdAt: Date
+    barangay: Barangay
 }
 
 type UserImage {

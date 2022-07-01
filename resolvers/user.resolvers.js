@@ -30,9 +30,6 @@ module.exports = {
             })
             return user
         },
-        user_signup: (_, args) => {
-            return userController.signupUser(args)
-        },
         user_update: (_, args) => {
             return userController.updateUser(args)
         },

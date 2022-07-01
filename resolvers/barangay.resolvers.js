@@ -4,8 +4,8 @@ module.exports = {
         barangays: () => {
             return barangayController.getAllBarangay()
         },
-        barangay: () => {
-            return barangayController.getBarangay()
+        barangay: (_, args) => {
+            return barangayController.getBarangay(args)
         },
     },
     Mutation: {

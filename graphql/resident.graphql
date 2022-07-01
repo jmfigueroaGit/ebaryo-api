@@ -25,7 +25,8 @@ type Mutation{
         city: String!,
         zipcode: String!,
         imageUrl: String!,
-        publicId: String!
+        publicId: String!,
+        barangayId: ID!
     ): Resident
     resident_update(
         user_id: ID!,

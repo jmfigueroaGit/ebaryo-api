@@ -39,7 +39,6 @@ const getFilterResidents = asyncHandler(async (args) => {
         path: 'user',
         select: '_id email isVerified hasNewNotif image'
     })
-    console.log(residents);
     return residents
 });
 
@@ -48,7 +47,12 @@ const getFilterResidents = asyncHandler(async (args) => {
 const getResident = asyncHandler(async (id) => {
     const resident = await Resident.findById(id).populate({
         path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
+        populate: { 
+            path: 'barangay',
+            populate: {
+                path: 'admin'
+            } 
+        }
     })
     if (resident) return resident
     else throw new ApolloError('Resident not existed with this ID');
@@ -59,7 +63,12 @@ const getResident = asyncHandler(async (id) => {
 const getResidentById = asyncHandler(async (user_id) => {
     const resident = await Resident.findOne({ user: user_id }).populate({
         path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
+        populate: { 
+            path: 'barangay',
+            populate: {
+                path: 'admin'
+            } 
+        }
     })
     if (resident) return resident
     else throw new ApolloError(`Resident not existed with this User's ID`);
@@ -96,6 +105,7 @@ const createResident = asyncHandler(async (args) => {
     const user = await User.create({
         name: first + " " + middle + " " + last,
         email,
+        barangay: barangayId,
         password: generateToken(email),
         image: {
             public_id: publicId,
@@ -128,7 +138,6 @@ const createResident = asyncHandler(async (args) => {
 
     const resident = await Resident.create({
         user: user._id,
-        barangay: barangayId,
         name: { first, middle, last },
         sex,
         birthday,
@@ -145,8 +154,13 @@ const createResident = asyncHandler(async (args) => {
         await ActivityLog.create({ user: user._id })
         return resident.populate({
             path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        });
+            populate: { 
+                path: 'barangay',
+                populate: {
+                    path: 'admin'
+                } 
+            }
+        })
     } else {
         throw new ApolloError('Invalid user data');
     }
@@ -186,7 +200,12 @@ const updateResident = asyncHandler(async (args) => {
 
         return updateResident.populate({
             path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
+            populate: { 
+                path: 'barangay',
+                populate: {
+                    path: 'admin'
+                } 
+            }
         })
     } else {
         throw new ApolloError('Resident not existed with this ID');

@@ -1,8 +1,8 @@
 const { dockStart, containerBootstrap, Nlp, LangEn } = require('@nlpjs/basic');
 const asyncHandler = require('express-async-handler');
 const Chatbot = require('../models/chatbot_model')
-const AdminNotification = require('../models/admin_notification_model')
 const Authorized = require('../models/authorized_model')
+const AuthorizedNotification = require('../models/authorized_notification_model')
 // @desc    Get answer through chatbot
 // @access  Private
 const getAnswer = asyncHandler(async (question) => {
@@ -39,7 +39,7 @@ const getAnswer = asyncHandler(async (question) => {
                 notifId: tl._id
             }
     
-            const notification = await AdminNotification.find();
+            const notification = await AuthorizedNotification.find();
     
             for (let i = 0; i < notification.length; i++) {
                 notification[i].notifications.push(authorizedData)
@@ -62,7 +62,7 @@ const getAnswer = asyncHandler(async (question) => {
                 notifId: en._id
             }
     
-            const notification = await AdminNotification.find();
+            const notification = await AuthorizedNotification.find();
     
             for (let i = 0; i < notification.length; i++) {
                 notification[i].notifications.push(authorizedData)

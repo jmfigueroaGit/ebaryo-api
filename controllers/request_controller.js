@@ -7,8 +7,8 @@ const Request = require('../models/request_model');
 const User = require('../models/user_model');
 const ActivityLog = require('../models/user_log_model')
 const userNotification = require('../models/user_notification_model');
-const Adminlog = require('../models/admin_log_model')
-const AdminNotification = require('../models/admin_notification_model')
+const Authorizedlog = require('../models/authorized_log_model')
+const AuthorizedNotification = require('../models/authorized_notification_model')
 const Authorized = require('../models/authorized_model')
 
 // @desc    Create barangay request
@@ -33,35 +33,32 @@ const createRequest = asyncHandler(async (args) => {
 
     if (barangay_request) {
         // Must have a notification in admin and authorized person of assigned barangay
-        // const activity = await ActivityLog.findOne({ user: user})
-        // const data = {
-        //     type: "request",
-        //     description: `You successfully requested ${barangay_request.request}`,
-        //     activityId: barangay_request._id
-        // }
+        const activity = await ActivityLog.findOne({ user: user})
+        const data = {
+            type: "request",
+            description: `You successfully requested ${barangay_request.request}`,
+            activityId: barangay_request._id
+        }
 
-        // activity.activities.push(data)
-        // activity.save()
+        activity.activities.push(data)
+        activity.save()
 
-        // const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
+        const authorized = await Authorized.updateMany({}, { $set: { hasNewNotif: true } });
 
-        // const authorizedData = {
-        //     type: "request",
-        //     description: `New document request by ${user.name}`,
-        //     notifId: barangay_request._id
-        // }
+        const authorizedData = {
+            type: "request",
+            description: `New document request by ${user.name}`,
+            notifId: barangay_request._id
+        }
 
-        // const notification = await AdminNotification.find();
+        const notification = await AuthorizedNotification.find();
 
-        // for (let i = 0; i < notification.length; i++) {
-        //     notification[i].notifications.push(authorizedData)
-        //     notification[i].save()
-        // }
+        for (let i = 0; i < notification.length; i++) {
+            notification[i].notifications.push(authorizedData)
+            notification[i].save()
+        }
 
-        return barangay_request.populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        return barangay_request.populate('user')
         
     } else {
         throw new ApolloError('Invalid data format');
@@ -79,10 +76,7 @@ const updateRequest = asyncHandler(async (args) => {
 
         const updated_request = await request.save()
 
-        return updated_request.populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        return updated_request.populate('user')
     } else {
         throw new ApolloError('Request not existed with this ID')
     }
@@ -104,10 +98,7 @@ const deleteRequest = asyncHandler(async (args) => {
 // @desc    Get barangay request
 // @access  Private || Admin
 const getRequestById = asyncHandler(async (args) => {
-    const request = await Request.findById(args.id).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image createdAt'
-    });
+    const request = await Request.findById(args.id).populate('user');
 
     if (request) {
         return request
@@ -120,10 +111,7 @@ const getRequestById = asyncHandler(async (args) => {
 // @desc    Get all barangay request
 // @access  Private && Admin
 const getAllRequests = asyncHandler(async () => {
-    const requests = await Request.find().populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const requests = await Request.find().populate('user')
 
     return requests
 });
@@ -135,10 +123,7 @@ const getFilterRequests = asyncHandler(async (args) => {
     const user = await User.findOne({ email: value })
     if(user){
         const requests = Request.find({ user: user._id })
-        return requests.populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        return requests.populate('user')
     }
     else{
         const requests = await Request.find({
@@ -148,10 +133,7 @@ const getFilterRequests = asyncHandler(async (args) => {
                 { status: { $regex: value.toLowerCase() } },
                 { transactionId: { $regex: value.toLowerCase() } }
             ]
-        }).populate({
-            path: 'user',
-            select: '_id name email isVerified hasNewNotif image'
-        })
+        }).populate('user')
     
         return requests
     }
@@ -160,10 +142,7 @@ const getFilterRequests = asyncHandler(async (args) => {
 // @desc    Get all barangay request of current logged in user
 // @access  Private
 const getUserRequests = asyncHandler(async (args) => {
-    const requests = await Request.find({ user: args.user_id }).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    const requests = await Request.find({ user: args.user_id }).populate('user')
 
     if (requests) {
         return requests
@@ -205,7 +184,7 @@ const changeRequestStatus = asyncHandler(async (args) => {
         }
 
     if (request) {
-        const activityLogs = await Adminlog.findOne({ authorized: authorized_id})
+        const activityLogs = await Authorizedlog.findOne({ authorized: authorized_id})
         const adminActivity = {
             type: "request",
             title: "Update request status",
@@ -228,10 +207,7 @@ const changeRequestStatus = asyncHandler(async (args) => {
         if (updated_request) {
             notification.notifications.push(data)
             notification.save()
-            return updated_request.populate({
-                path: 'user',
-                select: '_id name email isVerified hasNewNotif'
-            })
+            return updated_request.populate('user')
         }
     } else {
         throw new ApolloError('Request not existed with this ID')
@@ -247,10 +223,7 @@ const getRequestsByDate = asyncHandler(async (args) => {
             $gte: today.toDate(),
             $lte: moment(today).endOf('day').toDate()
         }
-    }).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    }).populate('user')
 
     return requests
 });
@@ -265,10 +238,7 @@ const getRequestsFilteredDate = asyncHandler(async (args) => {
             $gte: start,
             $lt: end
         }
-    }).populate({
-        path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
-    })
+    }).populate('user')
     return requests
 });
 

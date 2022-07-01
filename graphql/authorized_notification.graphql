@@ -1,0 +1,19 @@
+scalar Date
+
+type Query{
+    authorized_notification(authorizedId: ID!): AuthorizedNotifications
+}
+
+type AuthorizedNotifications{
+    _id: ID
+    authorized: Personnel
+    notifications: [AuthorizedNotification]
+    createdAt: Date
+}
+
+type AuthorizedNotification{
+    type: String
+    description: String
+    date: Date
+    notifId: ID
+}

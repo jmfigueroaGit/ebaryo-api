@@ -2,20 +2,19 @@ scalar Upload
 
 type Query{
     barangays: [Barangay]
-    barangay: Barangay
+    barangay(barangayId: ID!): Barangay
 }
 
 type Mutation{
-    barangay_info_setup(authorized: ID!, barangayInfo: BarangayInfoInput): Barangay
+    barangay_info_setup(authorizedId: ID!, barangayInfo: BarangayInfoInput): Barangay
     barangay_officials_setup(barangay_id: ID!, barangayOfficials: BarangayOfficialsInput): Barangay
-    barangay_images_setup(barangay_id: ID!, image: [Upload!], barangayMap: ImageInput): Barangay
-    barangay_update(barangay_id: ID!, barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, image: [ImageInput]): Barangay
+    barangay_images_setup(barangay_id: ID!, images: [ImageInput], barangayMap: ImageInput): Barangay
+    barangay_update(barangay_id: ID!, barangayInfo: BarangayInfoInput, barangayOfficials: BarangayOfficialsInput, image: [ImageInput], barangayMap: ImageInput): Barangay
     barangay_delete(barangay_id: ID!): Message  
 }
 
 type Barangay {
     _id: ID
-    authorized: Personnel
     barangayInfo: BarangayInfo
     barangayOfficials: BarangayOfficials
     images: [Image]
@@ -105,7 +104,7 @@ input DemographicInput{
     households: Int
     landAreas: Int
     streets: Int
-    healthCenter: Int
+    healthCenters: Int
     schools: Int
     seniorCitizen: Int
     pwd: Int
