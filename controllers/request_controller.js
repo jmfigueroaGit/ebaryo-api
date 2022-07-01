@@ -187,7 +187,7 @@ const changeRequestStatus = asyncHandler(async (args) => {
         const activityLogs = await Authorizedlog.findOne({ authorized: authorized_id})
         const adminActivity = {
             type: "request",
-            title: "Update request status",
+            title: `Update request status to ${status}`,
             description: `${request.request} - ${request.transactionId.toUpperCase()}`,
             activityId: request._id
         }

@@ -16,7 +16,9 @@ const Barangay = require('../models/barangay_model')
 const getAllResidents = asyncHandler(async () => {
     const residents = await Resident.find().populate({
         path: 'user',
-        select: '_id name email isVerified hasNewNotif image'
+        populate: {
+            path: "barangay"
+        }
     })
     return residents
 });
@@ -37,7 +39,9 @@ const getFilterResidents = asyncHandler(async (args) => {
         ]
     }).populate({
         path: 'user',
-        select: '_id email isVerified hasNewNotif image'
+        populate: {
+            path: "barangay"
+        }
     })
     return residents
 });
@@ -48,10 +52,7 @@ const getResident = asyncHandler(async (id) => {
     const resident = await Resident.findById(id).populate({
         path: 'user',
         populate: { 
-            path: 'barangay',
-            populate: {
-                path: 'admin'
-            } 
+            path: 'barangay'
         }
     })
     if (resident) return resident
@@ -64,10 +65,7 @@ const getResidentById = asyncHandler(async (user_id) => {
     const resident = await Resident.findOne({ user: user_id }).populate({
         path: 'user',
         populate: { 
-            path: 'barangay',
-            populate: {
-                path: 'admin'
-            } 
+            path: 'barangay'
         }
     })
     if (resident) return resident
@@ -79,7 +77,7 @@ const getResidentById = asyncHandler(async (user_id) => {
 const createResident = asyncHandler(async (args) => {
 
     // Mapping values from argument
-    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode, imageUrl, publicId, barangayId } = args;
+    const { first, middle, last, sex, birthday, nationality, mobileNumber, email, houseNumber, street, barangay, province, city, zipcode, imageUrl, publicId, barangayId, residencyLength } = args;
 
     const barangayExist = await Barangay.findById(barangayId)
 
@@ -144,6 +142,7 @@ const createResident = asyncHandler(async (args) => {
         nationality,
         mobileNumber,
         email,
+        residencyLength,
         address: { houseNumber, street, barangay, province, city, zipcode },
         residentId
     })
@@ -155,10 +154,7 @@ const createResident = asyncHandler(async (args) => {
         return resident.populate({
             path: 'user',
             populate: { 
-                path: 'barangay',
-                populate: {
-                    path: 'admin'
-                } 
+                path: 'barangay'
             }
         })
     } else {
@@ -182,6 +178,7 @@ const updateResident = asyncHandler(async (args) => {
         resident.nationality = args.nationality || resident.nationality
         resident.mobileNumber = args.mobileNumber || resident.mobileNumber
         resident.email = args.email || resident.email
+        resident.residencyLength = args.residencyLength || resident.residencyLength
         resident.address.houseNumber = args.houseNumber || resident.address.houseNumber
         resident.address.street = args.street || resident.address.street
         resident.address.barangay = args.barangay || resident.address.barangay
@@ -201,10 +198,7 @@ const updateResident = asyncHandler(async (args) => {
         return updateResident.populate({
             path: 'user',
             populate: { 
-                path: 'barangay',
-                populate: {
-                    path: 'admin'
-                } 
+                path: 'barangay'
             }
         })
     } else {

@@ -36,6 +36,11 @@ const residentSchema = new mongoose.Schema(
 			required: true,
 			unique: true
 		},
+		residencyLength: {
+			type: String,
+			required: true,
+			default: "1"
+		},
 		address: {
 			houseNumber: { type: String, required: true },
 			street: { type: String, required: true },

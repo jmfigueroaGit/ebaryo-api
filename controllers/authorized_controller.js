@@ -120,10 +120,7 @@ const updatePersonnel = asyncHandler(async (args) => {
         }
         const updated_personnel = await personnel.save();
         return updated_personnel.populate({
-            path: 'barangay',
-            populate: {
-               path: 'admin'
-        }})
+            path: 'barangay'})
     }
     else
         throw new ApolloError("Personnel not found with this id")

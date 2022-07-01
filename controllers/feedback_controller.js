@@ -87,7 +87,7 @@ const updateFeedbackStatus = asyncHandler(async (args) => {
         const activityLogs = await Authorizedlog.findOne({ authorized: authorized_id })
         const adminActivity = {
             type: "feedback",
-            title: "Update feedback status",
+            title: `Update feedback status to ${status}`,
             description: `${feedback.description} - ${feedback.fdbkId.toUpperCase()}`,
             activityId: feedback._id
         }

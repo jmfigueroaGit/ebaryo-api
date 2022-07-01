@@ -27,6 +27,7 @@ type Mutation{
         imageUrl: String!,
         publicId: String!,
         barangayId: ID!
+        residencyLength: String!
     ): Resident
     resident_update(
         user_id: ID!,
@@ -47,6 +48,7 @@ type Mutation{
         zipcode: String,
         imageUrl: String,
         publicId: String
+        residencyLength: String
     ): Resident
     resident_delete(id: ID!): Message
 }
@@ -61,6 +63,7 @@ type Resident {
     nationality: String
     mobileNumber: String
     email: String
+    residencyLength: String
     address: Address
     user: User
     residentId: String

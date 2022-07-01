@@ -15,10 +15,7 @@ const sendEmail = require('../utils/sendEmail')
 // @access  Private || Admin
 const getAllUsers = asyncHandler(async () => {
     const users = await User.find().populate({
-        path: 'barangay',
-        populate: {
-            path: 'admin'
-        } 
+        path: 'barangay'
     })
     return users
 });
@@ -40,10 +37,7 @@ const getFilterUsers = asyncHandler(async (args) => {
 // @access  Private 
 const getUserById = asyncHandler(async (id) => {
     const user = await User.findById(id).populate({
-        path: 'barangay',
-        populate: {
-            path: 'admin'
-        } 
+        path: 'barangay'
     })
     if (user)
         return user
@@ -55,10 +49,7 @@ const getUserById = asyncHandler(async (id) => {
 // @access  Public 
 const authUser = asyncHandler(async (email, password) => {
     const user = await User.findOne({ email }).select('+password').populate({
-        path: 'barangay',
-        populate: {
-            path: 'admin'
-        } 
+        path: 'barangay'
     })
 
     if (user && (await user.comparePassword(password))) {
@@ -79,10 +70,7 @@ const updateUser = asyncHandler(async (args) => {
         }
         await user.save();
         return user.populate({
-            path: 'barangay',
-            populate: {
-                path: 'admin'
-            } 
+            path: 'barangay'
         })
     }
     else
@@ -96,10 +84,7 @@ const authToken = asyncHandler(async (token) => {
     const user = User.findById(id)
     if (user)
         return user.populate({
-            path: 'barangay',
-            populate: {
-                path: 'admin'
-            } 
+            path: 'barangay'
         })
 })
 
@@ -186,10 +171,7 @@ const readNotification = asyncHandler(async (args) => {
     user.hasNewNotif = false
     await user.save()
     return user.populate({
-        path: 'barangay',
-        populate: {
-            path: 'admin'
-        } 
+        path: 'barangay'
     })
 })
 
